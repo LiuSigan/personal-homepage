@@ -21,12 +21,17 @@ img { filter: grayscale(1); }
 .ready .bar.site { opacity: 1; }
 
 /* Hero: letters rise from a mask, a rule draws, the caption follows. */
-.hero { padding: 27vh var(--pad) 11vh; }
+.hero { position: relative; padding: 27vh var(--pad) 11vh; }
 .hero h1 { font: 300 clamp(58px, 10.5vw, 176px)/.95 var(--serif); letter-spacing: -.015em; text-transform: none; white-space: nowrap; }
 .hero .w { display: inline-block; overflow: hidden; padding: .1em .12em .2em .02em; margin: -.1em -.12em -.2em -.02em; vertical-align: bottom; }
 .hero .it { font-style: italic; }
 .hero .ch { display: inline-block; transform: translateY(112%); transition: transform 1.7s var(--out); transition-delay: calc(var(--i) * 55ms + .15s); }
 .ready .hero .ch { transform: none; }
+.sketch { position: absolute; right: var(--pad); top: 9vh; bottom: calc(11vh + 62px); width: 44vw; pointer-events: none; opacity: 0; transition: opacity 2s ease 1.2s; }
+.ready .sketch { opacity: 1; }
+.sketch canvas { position: absolute; left: 0; top: 0; width: 100%; height: calc(100% - 30px); }
+.plate { position: absolute; right: 0; bottom: 0; display: flex; gap: 20px; color: var(--dim); opacity: 0; transition: opacity 1s ease; }
+.plate.on { opacity: 1; } #plateName { color: var(--ink); }
 .rule { height: 1px; background: var(--line); margin-top: clamp(22px, 3.4vw, 52px); transform: scaleX(0); transform-origin: left; transition: transform 2.2s var(--inout) .5s; }
 .ready .rule { transform: none; }
 .meta { display: flex; justify-content: space-between; gap: 20px; padding-top: 16px; color: var(--dim); }
@@ -112,7 +117,8 @@ footer a { transition: color .5s; } footer a:hover { color: var(--ink); }
 @media (max-width: 900px) { .index { display: block; } .preview { display: none; } }
 @media (hover: none) { .preview { display: none; } .index { display: block; } }
 @media (max-width: 760px) {
-  .hero { padding: 24vh var(--pad) 9vh; }
+  .hero { padding: 31vh var(--pad) 9vh; }
+  .sketch { top: 9vh; bottom: auto; height: 21vh; width: auto; left: var(--pad); } #plateNote { display: none; }
   .meta span:nth-child(2) { display: none; }
   .strip { width: 100%; margin-left: 0; transform: none; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; }
   .strip::-webkit-scrollbar { display: none; }
