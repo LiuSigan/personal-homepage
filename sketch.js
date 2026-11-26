@@ -139,7 +139,7 @@
     const cv = $("sketch"); if (!cv) return; const st = stage(cv, 195, 124), plate = $("plate"), Y0 = -.56, P0 = .24;
     const M = [{ m: fm2, name: "Nikon FM2", note: "35mm SLR — 1982", draw: 4800 }, { m: x100, name: "Fujifilm X100VI", note: "23mm fixed lens — 2024", draw: 4600 }, { m: roll, name: "35mm film", note: "36 exposures", draw: 2600, film: true }];
     const HOLD = 450, SPIN = 10500, ERASE = 1500, GAP = 550, lead = (s, v) => [FX + 19 + s, v, 11.2 + 11 * Math.sin(s / 48) * clamp(s / 50)];
-    const show = (o, p, yaw, pitch, L) => { st.begin(yaw, pitch); st.model(o.m, p); if (L) { const f = filmStrip(L, lead, true); if (f.outline) st.fill(f.outline, .045); f.forEach(Q => st.poly(Q, .8)); } };
+    const show = (o, p, yaw, pitch, L) => { st.begin(yaw, pitch); st.model(o.m, p); if (L) { const f = filmStrip(L, lead, true); if (f.outline) st.fill(f.outline, .025); f.forEach(Q => st.poly(Q, .8)); } };
     let mi = 0, clock = 0, t0 = 0, last = 0, started = false, seen = true, label = -1;
     const caption = i => { label = i; $("plateNum").textContent = `0${i + 1} / 0${M.length}`; $("plateName").textContent = M[i].name; $("plateNote").textContent = M[i].note; };
     function frame(now) {
@@ -171,7 +171,7 @@
         const A = [-55, 11.2], B = [RX, 31], LEN = Math.hypot(B[0] - A[0], B[1] - A[1]), at = (f, y) => [A[0] + (B[0] - A[0]) * f, y, A[1] + (B[1] - A[1]) * f];
         return { name: "Load the reel", draw: 2600, act: 6400, pitch: .6, yaw: -.3, lift: 0, frame(p, t) { const turns = 5 * inout(t), th = turns * TAU, travel = turns * 150, tw = t > 0 && t < 1 ? .26 * Math.sin(turns * TAU * 2.5) : 0, run = clamp(p * 1.6);
           // Film between the cassette and the reel: a translucent band whose perforations travel with it.
-          st.fill([at(0, 17.5), at(run, 17.5), at(run, -17.5), at(0, -17.5)], .055 * p); [17.5, -17.5].forEach(y => st.poly(path([at(0, y), at(1, y)]), .8 * p, .9, null, run));
+          st.fill([at(0, 17.5), at(run, 17.5), at(run, -17.5), at(0, -17.5)], .02 * p); [17.5, -17.5].forEach(y => st.poly(path([at(0, y), at(1, y)]), .8 * p, .9, null, run));
           if (p > .6) { for (let s = travel % 6; s < LEN - 3.2; s += 6) { const f0 = s / LEN, f1 = (s + 3.2) / LEN; [[16, 13.2], [-13.2, -16]].forEach(([u, v]) => st.poly([at(f0, u), at(f1, u), at(f1, v), at(f0, v), at(f0, u)], .5 * p, .7)); }
             for (let s = travel % 38; s < LEN; s += 38) st.poly([at(s / LEN, 11.5), at(s / LEN, -11.5)], .4 * p, .7); }
           // Film wound into the spiral: every turn is a thin wall, so the coil grows denser as it fills.
@@ -207,7 +207,7 @@
         // A drop: round below, drawn up to a point of height r * k above its centre.
         const tear = (r, k, at) => { const Q = [at(0, r * k)]; for (let i = 0; i <= 12; i++) { const a = (35 - i / 12 * 250) * Math.PI / 180; Q.push(at(r * Math.cos(a), r * Math.sin(a))); } Q.push(Q[0]); return Q; };
         return { name: "Wash and dry", draw: 2600, act: 5600, pitch: .1, yaw: -.3, lift: 16, zoom: .9, frame(p, t, clock) { const L = 100 * inout(clamp(p * 1.15)), sway = .5 * Math.sin(clock / 1100), P = (s, v) => { const a = sway * s / 100; return [v * Math.cos(a), 48 - s, v * Math.sin(a)]; };
-          const f = filmStrip(L, P, false); if (f.outline) st.fill(f.outline, .045 * p); f.frames.forEach(Q => st.fill(Q, .035 * p)); f.forEach(Q => st.poly(Q, .8));
+          const f = filmStrip(L, P, false); if (f.outline) st.fill(f.outline, .025 * p); f.frames.forEach(Q => st.fill(Q, .025 * p)); f.forEach(Q => st.poly(Q, .8));
           st.model(rig, p); st.model(weight, clamp((p - .8) / .2), rotY(-sway));
           if (t > 0) { const wet = p * clamp(t * 6);
             // beads of water sliding down the wet film, each with a short trail
