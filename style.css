@@ -43,7 +43,7 @@ img { filter: grayscale(1); }
 .ready .rule { transform: none; }
 .meta { display: flex; justify-content: space-between; gap: 20px; padding-top: 16px; color: var(--dim); }
 .meta span { opacity: 0; transform: translateY(10px); transition: opacity 1.4s ease, transform 1.4s var(--out); }
-.meta span:nth-child(1) { transition-delay: 1.1s; } .meta span:nth-child(2) { transition-delay: 1.25s; } .meta span:nth-child(3) { transition-delay: 1.4s; }
+.meta span:nth-child(1) { transition-delay: 1.1s; } .meta span:nth-child(2) { transition-delay: 1.3s; }
 .ready .meta span { opacity: 1; transform: none; }
 .scroll { display: inline-flex; align-items: center; gap: 12px; }
 .scroll i { width: 1px; height: 26px; background: var(--line); position: relative; overflow: hidden; }
@@ -156,7 +156,7 @@ footer { align-items: flex-end; margin-top: -1.6em; } footer .sig { display: fle
 @media (max-width: 760px) {
   .hero { padding: 31vh var(--pad) 9vh; }
   .sketch { top: 9vh; bottom: auto; height: 21vh; width: auto; left: var(--pad); } #plateNote { display: none; }
-  .meta span:nth-child(2) { display: none; }
+  .meta .scroll { display: none; }
   .strip { --fw: 80vw; }
   main { --lab: 58px; } main .label { flex-direction: column; gap: 4px; } .label .where { display: none; }
   .ser .head, .ser li button { grid-template-columns: 2.6em 1fr; } .ser .w { display: none; } .ser .view { margin-left: 2.6em; }
