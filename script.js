@@ -41,7 +41,7 @@
   Promise.race([Promise.all([document.fonts ? document.fonts.ready : 0, ...first]), new Promise(r => setTimeout(r, 2500))]).then(() => requestAnimationFrame(() => {
     document.body.classList.add("ready");
     const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .15 });
-    document.querySelectorAll(".row, .index, .contact").forEach(el => io.observe(el));
+    document.querySelectorAll(".row, .index").forEach(el => io.observe(el));
     const lamp = new IntersectionObserver(es => { if (es[0].isIntersecting) { setTimeout(() => sheet.classList.add("lit"), 500); lamp.disconnect(); } }, { threshold: .02 }); lamp.observe(sheet);
   }));
 

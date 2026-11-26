@@ -96,14 +96,10 @@ main .label { color: #2c2c2c; }
 .preview { position: sticky; top: 14vh; aspect-ratio: 3 / 2; margin-top: 10px; opacity: 0; transition: opacity 1.6s ease .4s; }
 .index.in .preview { opacity: 1; }
 .preview canvas { position: absolute; left: 0; top: 0; width: 100%; height: calc(100% - 30px); }
-.contact { padding: 0 var(--pad) clamp(60px, 10vw, 150px); }
-.contact .label { padding: 0; margin-bottom: 18px; opacity: 0; transition: opacity 1.4s ease; }
-.contact a { position: relative; display: inline-block; font: 300 clamp(24px, 3.6vw, 56px)/1.15 var(--serif); letter-spacing: .01em; font-variant-numeric: lining-nums; text-transform: none; color: var(--ink); padding-bottom: .12em; opacity: 0; transform: translateY(18px); transition: opacity 1.6s ease .15s, transform 1.6s var(--out) .15s; }
-.contact a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform 1s var(--inout); }
-.contact a:hover::after, .contact a:focus-visible::after { transform: none; } .contact a:focus-visible { outline: 0; }
-.contact.in .label { opacity: 1; } .contact.in a { opacity: 1; transform: none; }
 footer { display: flex; justify-content: space-between; gap: 20px; padding: 0 var(--pad) 40px; color: var(--dim); }
 footer a { transition: color .5s; } footer a:hover { color: var(--ink); }
+footer .mail { text-transform: none; letter-spacing: .08em; }
+footer > * { white-space: nowrap; }
 
 /* Viewer: the chosen frame grows out of the strip; photographs change behind a moving edge. */
 .viewer { position: fixed; inset: 0; z-index: 60; background: #050505; opacity: 0; transition: opacity .9s ease; }
@@ -141,6 +137,7 @@ footer a { transition: color .5s; } footer a:hover { color: var(--ink); }
   .strip::-webkit-scrollbar { display: none; }
   .film { width: calc(var(--n, 4) * 80vw); } .cell { scroll-snap-align: center; }
   .index li button { grid-template-columns: 2.6em 1fr; } .index li .w { display: none; }
+  footer { gap: 10px; font-size: 10px; letter-spacing: .08em; } footer .mail { letter-spacing: .03em; }
   .cap { bottom: 11vh; }
 }
 @media (prefers-reduced-motion: reduce) {
