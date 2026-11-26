@@ -51,30 +51,39 @@ img { filter: grayscale(1); }
 @keyframes drip { 0% { transform: translateY(-100%); } 55%, 100% { transform: translateY(100%); } }
 
 /* Contact sheet: the strip glides in and each frame develops. */
-main { position: relative; padding: clamp(18px, 2.8vw, 46px) 0; margin-bottom: clamp(70px, 11vw, 160px); overflow-x: clip; }
-main::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 140% at 50% 50%, #b1b1ac, #979792); box-shadow: 0 0 130px 2px rgba(255, 255, 255, .06); opacity: 0; transition: opacity 2.6s cubic-bezier(.5, 0, .2, 1); }
+main { position: relative; margin-bottom: clamp(70px, 11vw, 160px); overflow-x: clip; --band: clamp(18px, 2.8vw, 46px); --lab: 38px; }
+main::before { content: ""; position: absolute; inset: var(--lab) 0 0; background: radial-gradient(ellipse 80% 140% at 50% 50%, #b1b1ac, #979792); box-shadow: 0 0 130px 2px rgba(255, 255, 255, .06); opacity: 0; transition: opacity 2.6s cubic-bezier(.5, 0, .2, 1); }
 main.lit::before { opacity: 1; }
 main > * { position: relative; }
 .label { display: flex; justify-content: space-between; gap: 20px; padding: 0 var(--pad); color: var(--dim); margin-bottom: 14px; }
-main .label { color: #2c2c2c; }
-.row { margin-bottom: clamp(30px, 4.4vw, 70px); } .row:last-child { margin-bottom: 0; }
+/* The line naming the series sits on the dark page above the light table, so the table shows the same margin over and under the film. */
+main .label { height: var(--lab); margin: 0; align-items: flex-start; white-space: nowrap; }
+main .label button { transition: color .5s; } main .label button:hover, main .label button:focus-visible { color: var(--ink); outline: 0; }
+.label .name { color: var(--ink); overflow: hidden; text-overflow: ellipsis; }
+.label .tools { display: inline-flex; gap: clamp(14px, 2vw, 30px); align-items: flex-start; }
+.label .switch { display: inline-flex; gap: 12px; } .label .switch[hidden] { display: none; } .label .switch button { letter-spacing: 0; font-size: 13px; line-height: 1.35; }
+#sView { border-bottom: 1px solid currentColor; line-height: 1.5; }
 .row .label { opacity: 0; transition: opacity 1.4s ease 1s; } .row.in .label { opacity: 1; }
-.glide { transform: translateX(16vw); opacity: 0; transition: transform 2.6s var(--out), opacity 1.6s ease; }
+.glide { padding: var(--band) 0; transform: translateX(16vw); opacity: 0; transition: transform 2.6s var(--out), opacity 1.6s ease; }
 .row.in .glide { transform: none; opacity: 1; }
 .ready .row:first-child .glide { transition-delay: .9s; }
-.strip { width: 108vw; margin-left: -4vw; background: var(--strip); box-shadow: 0 10px 30px -12px rgba(0, 0, 0, .45); transform: translateX(var(--x, 0)); will-change: transform; }
-.edge { height: clamp(20px, 2.4vw, 32px); display: flex; justify-content: space-around; color: #9a9a9a; font-size: clamp(7px, .68vw, 9.5px); letter-spacing: .3em; white-space: nowrap; overflow: hidden;
+/* Film: a row of frames between two perforated edges. On the page it scrolls sideways when a series is longer than the window. */
+.strip { background: var(--strip); box-shadow: 0 10px 30px -12px rgba(0, 0, 0, .45); overflow-x: auto; overflow-y: hidden; scrollbar-width: none; --fw: 32vw; }
+.strip::-webkit-scrollbar { display: none; }
+.film { width: max-content; min-width: 100%; }
+.edge { height: clamp(20px, 2.4vw, 32px); display: flex; gap: clamp(4px, .7vw, 10px); padding: 0 clamp(4px, .7vw, 10px); color: #9a9a9a; font-size: clamp(7px, .68vw, 9.5px); letter-spacing: .3em; white-space: nowrap; overflow: hidden;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='20'%3E%3Crect x='8' y='3' width='14' height='10' rx='2.5' fill='%23a5a5a0'/%3E%3C/svg%3E") left top / auto 62% repeat-x; }
 .edge.top { align-items: flex-end; } .edge.bottom { background-position: left bottom; align-items: flex-start; }
-.edge span { padding: 0 6px; opacity: .6; line-height: 1; }
-.frames { display: grid; grid-template-columns: repeat(var(--n, 4), 1fr); gap: clamp(4px, .7vw, 10px); padding: 2px clamp(4px, .7vw, 10px); }
+.edge .eg { flex: 1 0 var(--fw); min-width: 0; display: flex; justify-content: space-around; } .edge i { font-style: normal; opacity: .6; line-height: 1; }
+.frames { display: flex; gap: clamp(4px, .7vw, 10px); padding: 2px clamp(4px, .7vw, 10px); }
+.cell { flex: 1 0 var(--fw); min-width: 0; }
 .frame { position: relative; display: block; width: 100%; aspect-ratio: 3 / 2; overflow: hidden; background: #000; }
 .frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 2.2s var(--out); }
-.frame.portrait img { inset: auto; top: 50%; left: 50%; width: 66.667%; height: 150%; transform: translate(-50%, -50%) rotate(-90deg); }
+.frame.tall img { object-fit: contain; }   /* upright pictures stand upright, whole, in the same frame */
 .frame::after { content: ""; position: absolute; inset: 0; background: #000; pointer-events: none; transition: opacity 2.4s ease; transition-delay: calc(var(--k, 0) * 220ms + .7s); }
 .row.in .frame::after { opacity: 0; }
 .ready .row:first-child .frame::after { transition-delay: calc(var(--k, 0) * 220ms + 1.5s); }
-.frames .frame:not(.portrait):hover img { transform: scale(1.05); }
+.frames .frame:not(.tall):hover img { transform: scale(1.05); }
 .frame.away { visibility: hidden; }
 .frame.blank { background: #040404; } .frame.blank::after { display: none; }
 .frame:focus-visible { outline: 1px solid var(--dim); outline-offset: 3px; }
@@ -83,16 +92,20 @@ main .label { color: #2c2c2c; }
 .index { padding: 0 var(--pad) clamp(60px, 10vw, 150px); display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: clamp(30px, 7vw, 120px); align-items: start; }
 .index .label { padding: 0; opacity: 0; transition: opacity 1.4s ease; } .index.in .label { opacity: 1; }
 .index ol { list-style: none; padding: 0; }
-.index li { position: relative; overflow: hidden; }
-.index li::before, .index li:last-child::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--line); transform: scaleX(0); transform-origin: left; transition: transform 1.8s var(--inout); transition-delay: calc(var(--i) * 110ms); }
-.index li:last-child::after { top: auto; bottom: 0; transition-delay: calc(var(--i) * 110ms + 110ms); }
-.index.in li::before, .index.in li::after { transform: none; }
-.index li button { width: 100%; display: grid; grid-template-columns: 3.4em 1fr auto; gap: 12px; align-items: baseline; text-align: left; padding: 17px 0; color: var(--dim);
-  transform: translateY(105%); transition: transform 1.5s var(--out), color .6s; transition-delay: calc(var(--i) * 110ms + .15s), 0s; }
-.index.in li button { transform: none; }
-.index li .t { font: 300 clamp(22px, 2.4vw, 34px)/1.15 var(--serif); letter-spacing: 0; text-transform: none; color: var(--ink); transition: transform .9s var(--out); }
-.index li button:hover, .index li button:focus-visible { color: var(--ink); outline: 0; }
-.index li button:hover .t, .index li button:focus-visible .t { transform: translateX(14px); font-style: italic; }
+.ser { border-top: 1px solid var(--line); opacity: 0; transform: translateY(16px); transition: opacity 1.4s ease, transform 1.5s var(--out); transition-delay: calc(var(--i) * 90ms + .1s); }
+.ser:last-child { border-bottom: 1px solid var(--line); } .index.in .ser { opacity: 1; transform: none; }
+.index button { text-align: left; color: var(--dim); transition: color .6s; } .index button:hover, .index button:focus-visible { color: var(--ink); outline: 0; }
+.ser .head, .ser li button { width: 100%; display: grid; grid-template-columns: 3.4em 1fr auto; gap: 12px; align-items: baseline; }
+.ser .head { padding: 17px 0; }
+.ser .t { letter-spacing: 0; text-transform: none; color: var(--ink); transition: transform .9s var(--out); }
+.ser .head .t { font: 300 clamp(22px, 2.4vw, 34px)/1.15 var(--serif); }
+.ser button:hover .t, .ser button:focus-visible .t { transform: translateX(12px); font-style: italic; }
+/* A series opens in place to list its photographs. */
+.ser .body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .9s var(--inout); } .ser.open .body { grid-template-rows: 1fr; }
+.ser .body > div { overflow: hidden; min-height: 0; }
+.ser li button { padding: 9px 0; } .ser li .t { font: 300 clamp(17px, 1.5vw, 21px)/1.25 var(--serif); }
+.ser .view { margin: 12px 0 20px 3.4em; padding-left: 12px; }
+.ser .body ol, .ser .view { opacity: 0; transition: opacity .5s ease; } .ser.open .body ol, .ser.open .view { opacity: 1; transition: opacity .9s ease .35s; }
 .preview { position: sticky; top: 14vh; aspect-ratio: 3 / 2; margin-top: 10px; opacity: 0; transition: opacity 1.6s ease .4s; }
 .index.in .preview { opacity: 1; }
 .preview canvas { position: absolute; left: 0; top: 0; width: 100%; height: calc(100% - 30px); }
@@ -100,6 +113,17 @@ footer { display: flex; justify-content: space-between; gap: 20px; padding: 0 va
 footer a { transition: color .5s; } footer a:hover { color: var(--ink); }
 footer .mail { text-transform: none; letter-spacing: .08em; }
 footer { align-items: flex-end; margin-top: -1.6em; } footer .sig { display: flex; flex-direction: column; } footer span, footer a { white-space: nowrap; }
+
+/* Whole sheet: all the photographs of one series, four frames to a row, the rows touching like a printed contact sheet. */
+.sheetview { position: fixed; inset: 0; z-index: 50; background: #070707; opacity: 0; transition: opacity .7s ease; }
+.sheetview[hidden] { display: none; } .sheetview.show { opacity: 1; }
+.sheetview .bar { position: absolute; background: linear-gradient(#070707 55%, transparent); z-index: 2; } .sheetview #svName { color: var(--ink); }
+.svmeta { display: inline-flex; gap: clamp(16px, 2.6vw, 36px); }
+.svscroll { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; }
+.svinner { max-width: 1500px; margin: 0 auto; padding: 84px var(--pad) 12vh; --fw: 0px; }
+.svrow { background: var(--strip); opacity: 0; transform: translateX(7vw); transition: opacity 1.2s ease, transform 1.8s var(--out); transition-delay: calc(var(--r) * 110ms + .15s); }
+.svrow .film { width: auto; min-width: 0; } .svrow .frame::after { display: none; }
+.sheetview.show .svrow { opacity: 1; transform: none; }
 
 /* Viewer: the chosen frame grows out of the strip; photographs change behind a moving edge. */
 .viewer { position: fixed; inset: 0; z-index: 60; background: #050505; opacity: 0; transition: opacity .9s ease; }
@@ -133,14 +157,13 @@ footer { align-items: flex-end; margin-top: -1.6em; } footer .sig { display: fle
   .hero { padding: 31vh var(--pad) 9vh; }
   .sketch { top: 9vh; bottom: auto; height: 21vh; width: auto; left: var(--pad); } #plateNote { display: none; }
   .meta span:nth-child(2) { display: none; }
-  .strip { width: 100%; margin-left: 0; transform: none; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; }
-  .strip::-webkit-scrollbar { display: none; }
-  .film { width: calc(var(--n, 4) * 80vw); } .cell { scroll-snap-align: center; }
-  .index li button { grid-template-columns: 2.6em 1fr; } .index li .w { display: none; }
+  .strip { --fw: 80vw; }
+  main { --lab: 58px; } main .label { flex-direction: column; gap: 4px; } .label .where { display: none; }
+  .ser .head, .ser li button { grid-template-columns: 2.6em 1fr; } .ser .w { display: none; } .ser .view { margin-left: 2.6em; }
+  .svinner { padding-left: 0; padding-right: 0; } #svCount { display: none; } .sheetview .bar { white-space: nowrap; } #svName { overflow: hidden; text-overflow: ellipsis; }
   .cap { bottom: 11vh; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: .01s !important; transition-delay: 0s !important; animation: none !important; }
-  .strip { transform: none; }
 }

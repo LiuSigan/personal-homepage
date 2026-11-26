@@ -46,8 +46,8 @@
 
   // A length of 35mm film laid along P(s, v): s runs along the strip, v across it.
   const filmStrip = (L, P, tongue) => { const o = [], fr = [], run = (s0, s1, v) => { const r = []; for (let s = s0; s < s1; s += 6) r.push(P(s, v)); r.push(P(s1, v)); return r; };
-    o.frames = fr; if (L < 2) return o; const cut = tongue && L >= 46, end = cut ? 32 : 4;
-    if (cut) o.push([...run(0, L - 28, 17.5), P(L - 20, 1), P(L - 5, 1), P(L, -5), P(L, -12), P(L - 5, -17.5), ...run(0, L - 5, -17.5).reverse()]);
+    o.frames = fr; if (L < 2) return o; const c = tongue ? Math.min(28, L * .6) : 0, end = tongue ? c + 4 : 4;   // the leader's cut grows with the film, so its shape never jumps
+    if (tongue) o.push([...run(0, L - c, 17.5), P(L - c * .71, 1), P(L - c * .18, 1), P(L, -5), P(L, -12), P(L - c * .18, -17.5), ...run(0, L - c * .18, -17.5).reverse()]);
     else o.push([...run(0, L, 17.5), ...run(0, L, -17.5).reverse(), P(0, 17.5)]);
     o.outline = o[0];
     for (let s = 5; s < L - 6; s += 6) { o.push([P(s, -16), P(s + 3.2, -16), P(s + 3.2, -13.2), P(s, -13.2), P(s, -16)]); if (s < L - end) o.push([P(s, 16), P(s + 3.2, 16), P(s + 3.2, 13.2), P(s, 13.2), P(s, 16)]); }

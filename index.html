@@ -42,8 +42,13 @@
 
 <footer><div class="sig"><span>© 2026 Liu Sigan</span><span>Contact: <a class="mail" href="mailto:sliu050@e.ntu.edu.sg">sliu050@e.ntu.edu.sg</a></span></div><a href="#top">Top ↑</a></footer>
 
+<div class="sheetview" id="sheetview" role="dialog" aria-modal="true" aria-label="Contact sheet" hidden>
+  <div class="bar top"><span id="svName"></span><span class="svmeta"><span id="svCount"></span><button type="button" id="svClose">Close</button></span></div>
+  <div class="svscroll" id="svScroll"><div class="svinner" id="svInner"></div></div>
+</div>
+
 <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="Photograph" hidden>
-  <div class="bar top"><span>Liu Sigan</span><button type="button" id="close">Close</button></div>
+  <div class="bar top"><span id="vName"></span><button type="button" id="close">Close</button></div>
   <div class="stage" id="stage"></div>
   <div class="bar bot"><span class="count"><span class="clip"><b id="num">01</b></span><span>/</span><span id="tot">01</span></span><div class="progress"><i id="prog"></i></div><span class="hint"><button type="button" id="prev" aria-label="Previous">←</button><button type="button" id="next" aria-label="Next">→</button></span></div>
 </div>
