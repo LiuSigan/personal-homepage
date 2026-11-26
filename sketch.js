@@ -56,7 +56,7 @@
 
   // ---- a canvas to draw scenes on; dw x dh is the model-space size that should fit
   function stage(cv, dw, dh) {
-    const ctx = cv.getContext("2d"), F = 520; let W = 0, H = 0, K0 = 1, K = 1, dpr = 1, cy = 1, sy = 0, cp = 1, sp = 0, lift = 0;
+    const ctx = cv.getContext("2d"), off = document.createElement("canvas"), octx = off.getContext("2d"), F = 520; let W = 0, H = 0, K0 = 1, K = 1, dpr = 1, cy = 1, sy = 0, cp = 1, sp = 0, lift = 0;
     const tf = q => { const x = q[0] * cy + q[2] * sy, z = -q[0] * sy + q[2] * cy, y = q[1] + lift; return [x, y * cp - z * sp, y * sp + z * cp]; };
     const pj = v => { const s = F / (F - v[2]) * K; return [W / 2 + v[0] * s, H / 2 + K - v[1] * s, v[2]]; };
     const map = (pts, xf) => pts.map(q => pj(tf(xf ? xf(q) : q)));
@@ -77,10 +77,17 @@
         for (let i = Q.length - 1; i >= 0; i--) { const q = Q[i]; while (up.length > 1 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); }
         const B = lo.slice(0, -1).concat(up.slice(0, -1)); ctx.globalAlpha = a; ctx.beginPath(); B.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1; },
       fill(pts, a, xf) { if (a <= 0) return; const Q = map(pts, xf); ctx.globalAlpha = a; ctx.beginPath(); Q.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1; },
-      // Photograph mapped onto the parallelogram tl, tr, bl, cropped to that shape's proportions.
-      image(img, tl, tr, bl, a, xf) { if (!img || !img.complete || !img.naturalWidth || a <= 0) return; const [A, B, C] = map([tl, tr, bl], xf), ar = plen([tl, tr]) / plen([tl, bl]);
+      // Photograph laid on the rectangle tl, tr, bl (and the corner opposite tl) in true perspective: the rectangle is cut
+      // into a small grid and each cell is placed separately, off screen, then the whole is blended in at once.
+      image(img, tl, tr, bl, a, xf) { if (!img || !img.complete || !img.naturalWidth || a <= 0) return; const ar = plen([tl, tr]) / plen([tl, bl]), NX = 10, NY = 7, G = [];
         let sw = img.naturalWidth, sh = img.naturalHeight, sx = 0, sy0 = 0; if (sw / sh > ar) { const w = sh * ar; sx = (sw - w) / 2; sw = w; } else { const h = sw / ar; sy0 = (sh - h) / 2; sh = h; }
-        ctx.save(); ctx.globalAlpha = a; ctx.setTransform(dpr * (B[0] - A[0]) / sw, dpr * (B[1] - A[1]) / sw, dpr * (C[0] - A[0]) / sh, dpr * (C[1] - A[1]) / sh, dpr * A[0], dpr * A[1]); ctx.drawImage(img, sx, sy0, sw, sh, 0, 0, sw, sh); ctx.restore(); }
+        for (let n = 0; n <= NY; n++) for (let m = 0; m <= NX; m++) { const u = m / NX, v = n / NY; G.push([0, 1, 2].map(k => tl[k] + (tr[k] - tl[k]) * u + (bl[k] - tl[k]) * v)); }
+        const Q = map(G, xf), cw = sw / NX, ch = sh / NY; if (off.width !== cv.width || off.height !== cv.height) { off.width = cv.width; off.height = cv.height; }
+        octx.setTransform(1, 0, 0, 1, 0, 0); octx.clearRect(0, 0, off.width, off.height);
+        for (let n = 0; n < NY; n++) for (let m = 0; m < NX; m++) { const A = Q[n * (NX + 1) + m], B = Q[n * (NX + 1) + m + 1], C = Q[(n + 1) * (NX + 1) + m], ex = cw / Math.max(1, Math.hypot(B[0] - A[0], B[1] - A[1])), ey = ch / Math.max(1, Math.hypot(C[0] - A[0], C[1] - A[1]));
+          octx.setTransform(dpr * (B[0] - A[0]) / cw, dpr * (B[1] - A[1]) / cw, dpr * (C[0] - A[0]) / ch, dpr * (C[1] - A[1]) / ch, dpr * A[0], dpr * A[1]);
+          const w = m < NX - 1 ? Math.min(cw + ex, sw - m * cw) : cw, h = n < NY - 1 ? Math.min(ch + ey, sh - n * ch) : ch; octx.drawImage(img, sx + m * cw, sy0 + n * ch, w, h, 0, 0, w, h); }
+        ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = a; ctx.drawImage(off, 0, 0); ctx.restore(); }
     };
   }
   const watch = (cv, set) => new IntersectionObserver(es => set(es[0].isIntersecting)).observe(cv);
@@ -235,7 +242,7 @@
         return { name: "Dry", draw: 2000, act: 4400, pitch: .1, yaw: c => -.3 + .1 * Math.sin(c / 1500), lift: 4, frame(p, t, clock, img) { const R = rotX(.09 * Math.sin(clock / 900), 53, 0), a = inout(clamp(p * 1.3));
           const pa = [[-43, 53, 0], [43, 53, 0], [43, -4, 0], [-43, -4, 0]];
           st.fill(pa, .66 * a, R); st.image(img, [-39, 49, 0], [39, 49, 0], [-39, 0, 0], a, R); st.poly(path(pa, true), .7 * p, .9, R, clamp(p * 1.4)); st.model(rig, p);
-          if (t > 0 && t < .5) { const f = t / .5; st.poly(ring([36, -6 - 50 * f * f, 0], 1.5, "z", 10), (1 - f) * p); } } }; })()
+          if (t > 0 && t < .5) { const f = t / .5, y = -7 - 46 * f * f, Q = [[36, y + 2 * (2.2 + f), 0]]; for (let i = 0; i <= 12; i++) { const g = (35 - i / 12 * 250) * Math.PI / 180; Q.push([36 + 2 * Math.cos(g), y + 2 * Math.sin(g), 0]); } Q.push(Q[0]); st.fill(Q, .3 * (1 - f) * p); st.poly(Q, .9 * (1 - f) * p, .8); } } }; })()
     ];
     const ERASE = 1200, GAP = 400, imgs = []; let si = 0, pi = 0, clock = 0, t0 = 0, last = 0, seen = false, label = -1;
     const photo = () => { const P = window.PHOTOS || []; if (!P.length) return null; const h = window.SHEET_HOVER, i = (h != null ? h : pi) % P.length; if (!imgs[i]) { imgs[i] = new Image(); imgs[i].src = "./photos/" + P[i].src; } return imgs[i]; };
