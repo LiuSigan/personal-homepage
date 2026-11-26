@@ -47,7 +47,7 @@
     if (wait > 0) { wait -= dt; return; }
     const max = strip.scrollWidth - strip.clientWidth, runs = max > 8;
     if (Math.abs(strip.scrollLeft - pos) > 3) pos = strip.scrollLeft;   // the visitor moved it
-    if (runs && pos < max) { pos = Math.min(max, pos + max / Math.max(8000, Math.min(26000, S[cs].photos.length * 1300)) * dt); strip.scrollLeft = pos; return; }
+    if (runs && pos < max) { pos = Math.min(max, pos + max / Math.max(13000, Math.min(48000, S[cs].photos.length * 2200)) * dt); strip.scrollLeft = pos; return; }
     dwell += dt; if (dwell > (runs ? 1100 : 6500) && (S.length > 1 || runs)) mount((cs + 1) % S.length, 1);
   }
   requestAnimationFrame(t => { lastT = t; play(t); });
