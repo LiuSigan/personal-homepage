@@ -244,24 +244,23 @@
           st.fill(pa, .66 * a, R); st.image(img, [-39, 49, 0], [39, 49, 0], [-39, 0, 0], a, R); st.poly(path(pa, true), .7 * p, .9, R, clamp(p * 1.4)); st.model(rig, p);
           if (t > 0 && t < .5) { const f = t / .5, y = -7 - 46 * f * f, Q = [[36, y + 2 * (2.2 + f), 0]]; for (let i = 0; i <= 12; i++) { const g = (35 - i / 12 * 250) * Math.PI / 180; Q.push([36 + 2 * Math.cos(g), y + 2 * Math.sin(g), 0]); } Q.push(Q[0]); st.fill(Q, .3 * (1 - f) * p); st.poly(Q, .9 * (1 - f) * p, .8); } } }; })()
     ];
-    const ERASE = 1200, GAP = 400, imgs = [], N = scenes.length, replay = $("stepReplay"); let si = 0, pi = 0, clock = 0, t0 = 0, last = 0, seen = false, label = -1, ended = false;
+    const ERASE = 1200, GAP = 400, imgs = [], N = scenes.length, arrows = [$("stepPrev"), $("stepNext")]; let si = 0, pi = 0, clock = 0, t0 = 0, last = 0, seen = false, label = -1;
     const photo = () => { const P = window.PHOTOS || []; if (!P.length) return null; const h = window.SHEET_HOVER, i = (h != null ? h : pi) % P.length; if (!imgs[i]) { imgs[i] = new Image(); imgs[i].src = "./photos/" + P[i].src; } return imgs[i]; };
     const caption = i => { label = i; $("stepNum").textContent = `0${i + 1} / 0${N}`; $("stepName").textContent = scenes[i].name; };
     const show = (s, p, t) => { st.begin(typeof s.yaw === "function" ? s.yaw(clock) : s.yaw + .06 * Math.sin(clock / 2600), s.pitch + .02 * Math.sin(clock / 2100), s.lift, s.zoom || 1); s.frame(p, t, clock, photo()); };
-    // The sequence plays through once and rests on the finished print; the arrows step through it by hand.
-    const go = i => { si = (i + N) % N; t0 = clock; ended = false; replay.hidden = true; caption(si); if (reduce) show(scenes[si], 1, 1); };
-    $("stepPrev").onclick = () => go(si - 1); $("stepNext").onclick = () => go(si + 1); replay.onclick = () => { pi++; go(0); };
+    // The sequence loops. The arrows for stepping through it by hand appear only once it has been seen in full.
+    const go = i => { si = (i + N) % N; t0 = clock; caption(si); if (reduce) show(scenes[si], 1, 1); }, unlock = () => arrows.forEach(b => { b.hidden = false; });
+    arrows[0].onclick = () => go(si - 1); arrows[1].onclick = () => go(si + 1);
     function frame(now) {
       requestAnimationFrame(frame); const dt = Math.min(64, now - last); last = now; if (!seen || paused()) return;
-      clock += dt; let s = scenes[si], e = clock - t0; if (si < N - 1 && e >= s.draw + s.act + ERASE + GAP) { si++; s = scenes[si]; t0 = clock; e = 0; }
+      clock += dt; let s = scenes[si], e = clock - t0; if (e >= s.draw + s.act + ERASE + GAP) { si = (si + 1) % N; if (!si) { pi++; unlock(); } s = scenes[si]; t0 = clock; e = 0; }
       if (label !== si) caption(si);
       let p = 1, t = 0; const a = s.draw, b = a + s.act, c = b + ERASE;
-      if (e < a) p = e / a; else if (e < b) t = (e - a) / s.act; else if (si === N - 1) { t = 1; if (!ended) { ended = true; replay.hidden = false; } }
-      else if (e < c) { const u = (e - b) / ERASE; p = 1 - u * u; t = 1; } else { p = 0; t = 1; }
+      if (e < a) p = e / a; else if (e < b) t = (e - a) / s.act; else if (e < c) { const u = (e - b) / ERASE; p = 1 - u * u; t = 1; } else { p = 0; t = 1; }
       show(s, p, t);
     }
     st.size(); plate.classList.add("on"); addEventListener("resize", () => { st.size(); if (reduce) show(scenes[si], 1, 1); });
-    if (reduce) { si = 4; caption(4); const im = photo(), once = () => show(scenes[si], 1, 1); if (im && !im.complete) im.onload = once; once(); return; }
+    if (reduce) { si = 4; caption(4); unlock(); const im = photo(), once = () => show(scenes[si], 1, 1); if (im && !im.complete) im.onload = once; once(); return; }
     watch(cv, v => { if (v && !seen) st.size(); seen = v; });
     requestAnimationFrame(t => { last = t; frame(t); });
   })();
