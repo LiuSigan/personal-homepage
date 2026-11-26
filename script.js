@@ -29,14 +29,12 @@
     f.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") say(`${pad(+f.dataset.i + 1)} — ${p.title}`); });
     f.addEventListener("pointerleave", () => say(where.dataset.range)); });
 
-  // Index and its preview panel.
+  // Index.
   $("total").textContent = `${pad(P.length)} photographs`;
   $("list").innerHTML = P.map((p, i) => `<li style="--i:${i}"><button type="button" data-i="${i}"><span class="n">${pad(i + 1)}</span><span class="t">${p.title}</span><span class="w">${place(p)}</span></button></li>`).join("");
-  const preview = $("preview"); preview.innerHTML = P.map(p => `<img data-src="${src(p)}" alt="">`).join("");
-  const previews = [...preview.children];
-  $("list").addEventListener("pointerover", e => { const b = e.target.closest("button"); if (!b || e.pointerType !== "mouse") return;
-    previews.forEach((im, k) => { if (k === +b.dataset.i && im.dataset.src) { im.src = im.dataset.src; delete im.dataset.src; } im.classList.toggle("on", k === +b.dataset.i); }); });
-  $("list").addEventListener("pointerleave", () => previews.forEach(im => im.classList.remove("on")));
+  // The darkroom drawing beside the index prints whichever title the pointer rests on.
+  $("list").addEventListener("pointerover", e => { const b = e.target.closest("button"); if (b && e.pointerType === "mouse") window.SHEET_HOVER = +b.dataset.i; });
+  $("list").addEventListener("pointerleave", () => { window.SHEET_HOVER = null; });
 
   // Opening sequence starts once the type and the first strip are ready, then sections reveal as they enter.
   const first = frames.slice(0, PER).map(f => f.firstElementChild.decode ? f.firstElementChild.decode().catch(() => {}) : 0);
