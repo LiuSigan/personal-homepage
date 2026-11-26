@@ -13,29 +13,33 @@
 <body>
 <div class="grain" aria-hidden="true"></div>
 
-<header class="bar top">
+<header class="bar top site">
   <a href="#top">Liu Sigan</a>
   <nav><a href="#sheet">Sheet</a><a href="#index">Index</a></nav>
 </header>
 
 <section class="hero" id="top">
-  <h1>Liu Sigan</h1>
-  <p>Photographs in black &amp; white</p>
+  <h1 aria-label="Liu Sigan"><span class="w" aria-hidden="true">Liu</span> <span class="w it" aria-hidden="true">Sigan</span></h1>
+  <div class="rule"></div>
+  <p class="meta"><span>Photographs in black &amp; white</span><span>Series 01 — City at night</span><span class="scroll">Scroll<i></i></span></p>
 </section>
 
 <main id="sheet"></main>
 
 <section class="index" id="index">
-  <p class="label"><span>Index</span><span id="total"></span></p>
-  <ol id="list"></ol>
+  <div class="col">
+    <p class="label"><span>Index</span><span id="total"></span></p>
+    <ol id="list"></ol>
+  </div>
+  <div class="preview" id="preview" aria-hidden="true"></div>
 </section>
 
 <footer><span>© 2026 Liu Sigan</span><a href="#top">Top ↑</a></footer>
 
 <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="Photograph" hidden>
   <div class="bar top"><span>Liu Sigan</span><button type="button" id="close">Close</button></div>
-  <div class="reel" id="reel" tabindex="0"></div>
-  <div class="bar bot"><span id="count">01 / 01</span><div class="progress"><i id="prog"></i></div><span class="hint"><button type="button" id="prev" aria-label="Previous">←</button><button type="button" id="next" aria-label="Next">→</button></span></div>
+  <div class="stage" id="stage"></div>
+  <div class="bar bot"><span class="count"><span class="clip"><b id="num">01</b></span><span>/</span><span id="tot">01</span></span><div class="progress"><i id="prog"></i></div><span class="hint"><button type="button" id="prev" aria-label="Previous">←</button><button type="button" id="next" aria-label="Next">→</button></span></div>
 </div>
 
 <script src="./photos.js"></script>
