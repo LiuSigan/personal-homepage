@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Liu Sigan — Photographs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400;1,6..96,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+<style>
+  :root { --paper: #ebe5d8; --paper-2: #e2dbcb; --ink: #17140f; --soft: #6d6557; --print: #f6f3ea; }
+  * { box-sizing: border-box; margin: 0; }
+  html { background: var(--paper); scroll-behavior: smooth; }
+  body { color: var(--ink); font: 400 17px/1.55 "EB Garamond", Georgia, serif; }
+  .grain { position: fixed; inset: 0; pointer-events: none; z-index: 50; opacity: .5; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .3 0 0 0 0 .22 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .sc { font-size: 12px; letter-spacing: .28em; text-transform: uppercase; }
+
+  .cover { min-height: 100vh; display: grid; grid-template-rows: auto 1fr auto; padding: clamp(22px, 4vw, 56px); position: relative; }
+  .cover .top, .cover .bot { display: flex; justify-content: space-between; gap: 20px; }
+  .cover .mid { display: grid; grid-template-columns: repeat(12, 1fr); align-items: center; gap: 0 clamp(14px, 2vw, 28px); }
+  .cover h1 { font: italic 400 clamp(64px, 12.5vw, 210px)/.82 "Bodoni Moda", serif; letter-spacing: -.035em; grid-column: 1 / span 8; grid-row: 1; }
+  .cover h1 em { font-style: normal; }
+  .cover .tip { grid-column: 8 / span 4; grid-row: 1; z-index: 2; background: var(--print); padding: 9px; box-shadow: 0 1px 1px rgba(40,30,10,.25), 0 18px 34px -14px rgba(40,30,10,.5); transform: rotate(1.4deg) translateY(6%); }
+  .cover .tip img { display: block; width: 100%; filter: sepia(.16); }
+  .rule { height: 1px; background: var(--ink); opacity: .55; margin: 0 clamp(22px, 4vw, 56px); }
+
+  .plates { padding: clamp(60px, 10vw, 150px) clamp(22px, 4vw, 56px) 0; display: grid; gap: clamp(90px, 15vw, 220px); }
+  .plate { display: grid; grid-template-columns: repeat(12, 1fr); gap: 0 clamp(14px, 2vw, 28px); align-items: end; opacity: 0; transform: translateY(26px); transition: opacity 1.4s ease, transform 1.4s cubic-bezier(.2,.7,.2,1); }
+  .plate.in { opacity: 1; transform: none; }
+  .print { background: var(--print); padding: clamp(8px, 1.1vw, 16px); box-shadow: 0 1px 1px rgba(40,30,10,.22), 0 26px 50px -22px rgba(40,30,10,.5); }
+  .print img { display: block; width: 100%; height: auto; filter: sepia(.14) contrast(1.02); }
+  .plate figcaption { padding-bottom: 6px; }
+  .plate .num { font: italic 400 clamp(44px, 6vw, 96px)/.9 "Bodoni Moda", serif; letter-spacing: -.02em; display: block; margin-bottom: 14px; }
+  .plate .title { font-style: italic; font-size: 21px; display: block; }
+  .plate .where { color: var(--soft); display: block; margin-top: 6px; }
+  /* layouts */
+  .l-wide .print { grid-column: 1 / span 8; } .l-wide figcaption { grid-column: 10 / span 3; }
+  .r-wide .print { grid-column: 5 / span 8; grid-row: 1; } .r-wide figcaption { grid-column: 1 / span 3; grid-row: 1; text-align: right; }
+  .l-tall .print { grid-column: 2 / span 4; } .l-tall figcaption { grid-column: 7 / span 4; }
+  .r-tall .print { grid-column: 8 / span 4; grid-row: 1; } .r-tall figcaption { grid-column: 3 / span 4; grid-row: 1; text-align: right; }
+  .c-sq .print { grid-column: 4 / span 5; } .c-sq figcaption { grid-column: 10 / span 3; }
+
+  .index { padding: clamp(90px, 14vw, 200px) clamp(22px, 4vw, 56px) 60px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 0 28px; }
+  .index h2 { grid-column: 1 / span 4; font: italic 400 clamp(40px, 5.5vw, 84px)/.95 "Bodoni Moda", serif; letter-spacing: -.02em; }
+  .index ol { grid-column: 6 / span 7; list-style: none; padding: 0; }
+  .index li a { display: grid; grid-template-columns: 3.2em auto 1fr auto; gap: 10px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid rgba(23,20,15,.22); color: inherit; text-decoration: none; }
+  .index li a:hover .t { font-style: italic; }
+  .index .dots { border-bottom: 1px dotted rgba(23,20,15,.45); transform: translateY(-4px); }
+  .index .n, .index .w { color: var(--soft); }
+  footer { padding: 40px clamp(22px, 4vw, 56px) 44px; display: flex; justify-content: space-between; gap: 20px; color: var(--soft); }
+
+  @media (max-width: 760px) {
+    .cover .mid { display: block; } .cover .tip { width: 58%; margin: 34px 0 0 auto; }
+    .plate { display: block; } .plate figcaption { text-align: left !important; margin-top: 18px; }
+    .l-tall .print, .r-tall .print, .c-sq .print { width: 78%; } .r-tall .print { margin-left: auto; }
+    .index { display: block; } .index h2 { margin-bottom: 26px; }
+    .index li a { grid-template-columns: 2.4em 1fr auto; } .index .dots { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .plate { opacity: 1; transform: none; transition: none; } }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<section class="cover">
+  <div class="top sc"><span>Liu Sigan</span><span>Vol. I</span></div>
+  <div class="mid">
+    <h1>Photo<em>—</em><br />graphs</h1>
+    <div class="tip"><img id="coverimg" alt="" /></div>
+  </div>
+  <div class="bot sc"><span>Gelatin silver, 2023 — 2026</span><span>Twelve plates ↓</span></div>
+</section>
+<div class="rule"></div>
+
+<main class="plates" id="plates"></main>
+
+<section class="index" id="index">
+  <h2>List of<br />plates</h2>
+  <ol id="list"></ol>
+</section>
+<footer class="sc"><span>© MMXXVI Liu Sigan</span><span>All photographs by the author</span></footer>
+
+<script src="../photos.js"></script>
+<script>
+  const P = window.PHOTOS, roman = n => ["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV","XVI","XVII","XVIII","XIX","XX"][n] || n + 1;
+  document.getElementById("coverimg").src = "../photos/" + P[4].src;
+  const plates = document.getElementById("plates"), list = document.getElementById("list"); let side = 0;
+  P.forEach((p, i) => {
+    const r = p.w / p.h, kind = r > 1.2 ? "wide" : r < .85 ? "tall" : "sq";
+    const cls = kind === "sq" ? "c-sq" : (side++ % 2 ? "r-" : "l-") + kind;
+    plates.insertAdjacentHTML("beforeend", `<figure class="plate ${cls}" id="pl${i + 1}">
+      <div class="print"><img src="../photos/${p.src}" width="${p.w}" height="${p.h}" alt="${p.title}" loading="lazy"></div>
+      <figcaption><span class="num">${roman(i)}</span><span class="title">${p.title}</span><span class="where sc">${p.place}, ${p.year}</span></figcaption></figure>`);
+    list.insertAdjacentHTML("beforeend", `<li><a href="#pl${i + 1}"><span class="n">${roman(i)}</span><span class="t">${p.title}</span><span class="dots"></span><span class="w sc">${p.place} ${p.year}</span></a></li>`);
+  });
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .12 });
+  document.querySelectorAll(".plate").forEach(el => io.observe(el));
+</script>
+</body>
+</html>

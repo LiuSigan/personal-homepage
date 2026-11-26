@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Liu Sigan — Reel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #050505; --ink: #ece8dd; --dim: #77736a; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; background: var(--bg); overflow: hidden; }
+  body { color: var(--ink); font: 400 11px/1.5 "Space Mono", monospace; letter-spacing: .14em; text-transform: uppercase; }
+  .grain { position: fixed; inset: -50%; width: 200%; height: 200%; pointer-events: none; z-index: 60; opacity: .15; mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grain .7s steps(5) infinite; }
+  @keyframes grain { 0%{transform:translate(0,0)} 25%{transform:translate(-4%,3%)} 50%{transform:translate(3%,-5%)} 75%{transform:translate(-2%,4%)} 100%{transform:translate(0,0)} }
+  .flicker { position: fixed; inset: 0; pointer-events: none; z-index: 59; background: #fff; opacity: 0; animation: flicker 5s steps(1) infinite; }
+  @keyframes flicker { 0%,100%{opacity:0} 7%{opacity:.025} 8%{opacity:0} 43%{opacity:.035} 44%{opacity:0} 71%{opacity:.02} 72%{opacity:0} }
+  .scratch { position: fixed; top: 0; bottom: 0; left: 23%; width: 1px; background: rgba(255,255,255,.14); z-index: 58; pointer-events: none; animation: scratch 6s steps(1) infinite; }
+  @keyframes scratch { 0%{left:23%;opacity:1} 9%{opacity:0} 40%{left:71%;opacity:.7} 46%{opacity:0} 80%{left:48%;opacity:.5} 84%{opacity:0} }
+
+  .bar { position: fixed; left: 0; right: 0; z-index: 30; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 20px clamp(16px, 3vw, 40px); mix-blend-mode: difference; }
+  .bar.top { top: 0; } .bar.bot { bottom: 0; }
+  .bar a { color: inherit; text-decoration: none; }
+  .progress { flex: 1; height: 1px; background: rgba(236,232,221,.25); position: relative; margin: 0 clamp(10px, 2vw, 30px); }
+  .progress i { position: absolute; left: 0; top: -1px; height: 3px; width: 0; background: var(--ink); transition: width .5s cubic-bezier(.2,.7,.2,1); }
+  #count { font-variant-numeric: tabular-nums; }
+
+  .reel { height: 100%; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .reel::-webkit-scrollbar { display: none; }
+  .slide { flex: 0 0 100vw; height: 100%; scroll-snap-align: start; position: relative; display: grid; place-items: center; overflow: hidden; }
+
+  .title { text-align: left; padding: 0 clamp(16px, 3vw, 40px); width: 100%; }
+  .title h1 { font: 400 clamp(90px, 23.5vw, 420px)/.9 "Anton", Impact, sans-serif; letter-spacing: -.01em; text-transform: uppercase; }
+  .title h1 span { display: block; }
+  .title h1 span:last-child { color: transparent; -webkit-text-stroke: 1.5px var(--ink); }
+  .title p { margin-top: 26px; display: flex; justify-content: space-between; color: var(--dim); }
+  .title p b { color: var(--ink); font-weight: 400; animation: nudge 1.6s ease-in-out infinite; }
+  @keyframes nudge { 50% { transform: translateX(8px); } }
+  .leader { position: absolute; right: clamp(16px, 5vw, 80px); top: 50%; width: clamp(120px, 17vw, 260px); aspect-ratio: 1; transform: translateY(-50%); border: 1px solid rgba(236,232,221,.5); border-radius: 50%; mix-blend-mode: difference; }
+  .leader::before, .leader::after { content: ""; position: absolute; background: rgba(236,232,221,.5); }
+  .leader::before { left: 50%; top: -12%; bottom: -12%; width: 1px; } .leader::after { top: 50%; left: -12%; right: -12%; height: 1px; }
+  .leader i { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(rgba(236,232,221,.28) var(--a, 0deg), transparent 0); animation: sweep 2s linear infinite; }
+  @property --a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+  @keyframes sweep { to { --a: 360deg; } }
+
+  .big { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -52%); font: 400 clamp(260px, 62vh, 800px)/.8 "Anton", Impact, sans-serif; color: transparent; -webkit-text-stroke: 1px #2c2b27; letter-spacing: -.02em; user-select: none; }
+  .slide figure { position: absolute; z-index: 2; inset: 74px clamp(16px, 8vw, 140px); }
+  .slide img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: contrast(1.22) brightness(.96); opacity: .0; transform: scale(1.035); transition: opacity 1.1s ease, transform 2.4s cubic-bezier(.2,.7,.2,1); }
+  .slide.on img { opacity: 1; transform: none; }
+  .slide.odd img { object-position: left center; } .slide.even img { object-position: right center; }
+  .cap { position: absolute; z-index: 3; bottom: 74px; mix-blend-mode: difference; max-width: 40vw; }
+  .slide.odd .cap { right: clamp(16px, 8vw, 140px); text-align: right; } .slide.even .cap { left: clamp(16px, 8vw, 140px); }
+  .slide.center .cap { left: clamp(16px, 8vw, 140px); }
+  .slide.center img { object-position: center; }
+  .cap strong { display: block; font: 400 clamp(28px, 4.4vw, 76px)/.95 "Anton", sans-serif; letter-spacing: .01em; margin-bottom: 10px; }
+  .cap span { color: #bbb; }
+
+  .end { text-align: center; }
+  .end h2 { font: 400 clamp(60px, 14vw, 240px)/.85 "Anton", sans-serif; }
+  .end a { color: var(--dim); display: inline-block; margin-top: 24px; text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 3px; }
+
+  @media (max-width: 760px) {
+    .slide figure { inset: 64px 16px 170px; } .slide img { object-position: center !important; }
+    .cap { left: 16px !important; right: 16px !important; text-align: left !important; max-width: none; bottom: 64px; }
+    .leader { top: 22%; }
+  }
+  @media (prefers-reduced-motion: reduce) { .grain, .flicker, .scratch, .leader i, .title p b { animation: none; } .slide img { transition: none; } }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div><div class="flicker" aria-hidden="true"></div><div class="scratch" aria-hidden="true"></div>
+
+<div class="bar top"><a href="#" id="home">Liu Sigan</a><span>Reel 01 — Black &amp; White</span></div>
+<div class="bar bot"><span id="count">00 / 12</span><div class="progress"><i id="prog"></i></div><span>← → / Scroll</span></div>
+
+<main class="reel" id="reel" tabindex="0" aria-label="Photographs">
+  <section class="slide on">
+    <div class="title">
+      <h1><span>Liu</span><span>Sigan</span></h1>
+      <p><span>Photographs, 2023—2026</span><b>Picture start →</b></p>
+    </div>
+    <div class="leader" aria-hidden="true"><i></i></div>
+  </section>
+</main>
+
+<script src="../photos.js"></script>
+<script>
+  const P = window.PHOTOS, reel = document.getElementById("reel"), pad = n => String(n).padStart(2, "0");
+  P.forEach((p, i) => {
+    const pos = p.w === p.h ? "center" : i % 2 ? "even" : "odd";
+    reel.insertAdjacentHTML("beforeend", `<section class="slide ${pos}"><div class="big" aria-hidden="true">${pad(i + 1)}</div>
+      <figure><img src="../photos/${p.src}" alt="${p.title}" ${i > 1 ? 'loading="lazy"' : ""}></figure>
+      <div class="cap"><strong>${p.title}</strong><span>${p.place} — ${p.year}</span></div></section>`);
+  });
+  reel.insertAdjacentHTML("beforeend", `<section class="slide end"><div><h2>End of<br>reel</h2><a href="#" id="rewind">Rewind ←</a></div></section>`);
+  const slides = [...reel.children], count = document.getElementById("count"), prog = document.getElementById("prog");
+  let cur = 0, lock = false;
+  const go = i => { cur = Math.max(0, Math.min(slides.length - 1, i)); reel.scrollTo({ left: cur * innerWidth, behavior: "smooth" }); };
+  const sync = () => { const i = Math.round(reel.scrollLeft / innerWidth); cur = i; slides.forEach((s, k) => s.classList.toggle("on", k === i));
+    count.textContent = `${pad(Math.min(i, P.length))} / ${pad(P.length)}`; prog.style.width = (i / (slides.length - 1) * 100) + "%"; };
+  reel.addEventListener("scroll", sync, { passive: true }); sync();
+  reel.addEventListener("wheel", e => { if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return; e.preventDefault(); if (lock || Math.abs(e.deltaY) < 8) return; lock = true; go(cur + Math.sign(e.deltaY)); setTimeout(() => lock = false, 650); }, { passive: false });
+  addEventListener("keydown", e => { if (e.key === "ArrowRight" || e.key === " ") go(cur + 1); if (e.key === "ArrowLeft") go(cur - 1); });
+  document.getElementById("home").onclick = document.getElementById("rewind").onclick = e => { e.preventDefault(); go(0); };
+  addEventListener("resize", () => reel.scrollTo({ left: cur * innerWidth }));
+</script>
+</body>
+</html>
