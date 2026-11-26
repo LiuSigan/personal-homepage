@@ -102,19 +102,19 @@
   // ---- drawing
   const M = [fm2, x100, roll], Y0 = -.56, P0 = .24, F = 520;
   let W = 0, H = 0, K = 1, dpr = 1;
-  const size = () => { const r = cv.getBoundingClientRect(); dpr = Math.min(2, devicePixelRatio || 1); W = r.width; H = r.height; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); K = Math.min(W / 205, H / 128); };
+  const size = () => { const r = cv.getBoundingClientRect(); dpr = Math.min(2, devicePixelRatio || 1); W = r.width; H = r.height; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); K = Math.min(W / 195, H / 124); };
   function render(m, p, yaw, pitch, L) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H); ctx.strokeStyle = "#ededed"; ctx.lineCap = "round"; ctx.lineJoin = "round";
-    const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch), ox = W / 2, oy = H / 2 + 3 * K;
+    const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch), ox = W / 2, oy = H / 2 + 1 * K;
     const tf = q => { const x = q[0] * cy + q[2] * sy, z = -q[0] * sy + q[2] * cy; return [x, q[1] * cp - z * sp, q[1] * sp + z * cp]; };
     const pj = v => { const s = F / (F - v[2]) * K; return [ox + v[0] * s, oy - v[1] * s, v[2]]; };
     const run = (Q, f, a, w) => { const n = Q.length - 1, m = f * n; ctx.lineWidth = w;
       for (let i = 0; i < n && i < m; i++) { const t = Math.min(1, m - i), A = Q[i], B = Q[i + 1];
-        ctx.globalAlpha = a * (.2 + .8 * clamp(((A[2] + B[2]) / 2 + 75) / 150)); ctx.beginPath(); ctx.moveTo(A[0], A[1]); ctx.lineTo(A[0] + (B[0] - A[0]) * t, A[1] + (B[1] - A[1]) * t); ctx.stroke(); } };
+        ctx.globalAlpha = a * (.34 + .66 * clamp(((A[2] + B[2]) / 2 + 75) / 150)); ctx.beginPath(); ctx.moveTo(A[0], A[1]); ctx.lineTo(A[0] + (B[0] - A[0]) * t, A[1] + (B[1] - A[1]) * t); ctx.stroke(); } };
     m.S.forEach(s => { const f = inout(clamp((p - s.t0) / .24)); if (f <= 0) return;
       if (s.sil) { const a = tf(s.sil[0]), b = tf(s.sil[1]), dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy), full = Math.hypot(dx, dy, b[2] - a[2]) || 1; if (l / full < .1) return;
         const nx = dy / l * s.sil[2] * s.sil[3], ny = -dx / l * s.sil[2] * s.sil[3]; run([pj([a[0] + nx, a[1] + ny, a[2]]), pj([b[0] + nx, b[1] + ny, b[2]])], f, .9, 1); return; }
-      run(s.pts.map(q => pj(tf(q))), f, .88, 1); run(s.alt.map(q => pj(tf(q))), inout(clamp((p - s.t0 - .05) / .24)), .3, .7); });
+      run(s.pts.map(q => pj(tf(q))), f, .95, 1.1); run(s.alt.map(q => pj(tf(q))), inout(clamp((p - s.t0 - .05) / .24)), .36, .8); });
     if (L) film(L).forEach(Q => run(Q.map(q => pj(tf(q))), 1, .8, .9));
     ctx.globalAlpha = 1;
   }

@@ -44,6 +44,7 @@
     document.body.classList.add("ready");
     const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .15 });
     document.querySelectorAll(".row, .index").forEach(el => io.observe(el));
+    const lamp = new IntersectionObserver(es => { if (es[0].isIntersecting) { setTimeout(() => sheet.classList.add("lit"), 500); lamp.disconnect(); } }, { threshold: .02 }); lamp.observe(sheet);
   }));
 
   // Strips ease sideways with the scroll.
@@ -57,12 +58,13 @@
   // Viewer
   const viewer = $("viewer"), stage = $("stage"), num = $("num"), prog = $("prog");
   $("tot").textContent = pad(P.length);
-  stage.innerHTML = P.map(p => `<section class="slide"><figure><img data-src="${src(p)}" alt="${p.title}"></figure><div class="cap"><span class="clip"><em>${p.title}</em></span><span class="clip"><span>${place(p) || "&nbsp;"}</span></span></div></section>`).join("");
+  stage.innerHTML = P.map(p => `<section class="slide"><div class="print"><i class="paper"></i><figure><img data-src="${src(p)}" alt="${p.title}"></figure></div><div class="cap"><span class="clip"><em>${p.title}</em></span><span class="clip"><span>${place(p) || "&nbsp;"}</span></span></div></section>`).join("");
   const slides = [...stage.children], rects = []; let cur = 0, busy = false, opener = null;
   const load = i => [i - 1, i, i + 1].forEach(k => { const im = slides[k] && slides[k].querySelector("img[data-src]"); if (im) { im.src = im.dataset.src; delete im.dataset.src; } });
   const layout = () => { const W = innerWidth, H = innerHeight, small = W <= 760, px = small ? 16 : Math.max(18, Math.min(150, W * .09)), top = H * .09, bw = W - px * 2, bh = H * (small ? .69 : .72);
-    P.forEach((p, i) => { const s = Math.min(bw / p.w, bh / p.h), w = p.w * s, h = p.h * s, r = rects[i] = { left: px + (bw - w) / 2, top: top + (bh - h) / 2, width: w, height: h };
-      Object.assign(slides[i].querySelector("figure").style, { left: r.left + "px", top: r.top + "px", width: r.width + "px", height: r.height + "px" }); }); };
+    const m = Math.round(Math.max(12, Math.min(26, Math.min(W, H) * .024)));   // paper margin around each print
+    P.forEach((p, i) => { const s = Math.min((bw - 2 * m) / p.w, (bh - 2 * m) / p.h), w = p.w * s, h = p.h * s, r = rects[i] = { left: px + (bw - w) / 2, top: top + (bh - h) / 2, width: w, height: h }, st = slides[i].querySelector(".print").style;
+      Object.assign(st, { left: r.left - m + "px", top: r.top - m + "px", width: r.width + 2 * m + "px", height: r.height + 2 * m + "px" }); st.setProperty("--m", m + "px"); }); };
   const px = r => ({ left: r.left + "px", top: r.top + "px", width: r.width + "px", height: r.height + "px" });
   const visible = el => { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth; };
   const meter = (i, roll) => { prog.style.transform = `scaleX(${(i + 1) / P.length})`; const t = pad(i + 1);
@@ -93,11 +95,11 @@
     if (busy || i === cur || i < 0 || i >= P.length) return; const dir = i > cur ? 1 : -1, a = slides[cur], b = slides[i]; load(i); meter(i, true);
     history.replaceState(null, "", "#" + (i + 1));
     if (reduce) { a.classList.remove("on", "capin"); b.classList.add("on", "capin"); cur = i; return; }
-    busy = true; const fa = a.querySelector("figure"), fb = b.querySelector("figure"), o = { duration: 1400, easing: INOUT, fill: "both" };
+    busy = true; const fa = a.querySelector(".print"), fb = b.querySelector(".print"), ia = a.querySelector("img"), ib = b.querySelector("img"), o = { duration: 1400, easing: INOUT, fill: "both" };
     const gone = dir > 0 ? "inset(0 100% 0 0)" : "inset(0 0 0 100%)", come = dir > 0 ? "inset(0 0 0 100%)" : "inset(0 100% 0 0)";
     a.classList.remove("capin"); b.classList.add("on"); setTimeout(() => b.classList.add("capin"), 650);
-    const anims = [fa.animate({ clipPath: ["inset(0)", gone] }, o), fa.firstElementChild.animate({ transform: ["none", `translateX(${-14 * dir}%)`] }, o),
-      fb.animate({ clipPath: [come, "inset(0)"] }, o), fb.firstElementChild.animate({ transform: [`translateX(${16 * dir}%) scale(1.1)`, "none"] }, o)];
+    const anims = [fa.animate({ clipPath: ["inset(0)", gone] }, o), ia.animate({ transform: ["none", `translateX(${-14 * dir}%)`] }, o),
+      fb.animate({ clipPath: [come, "inset(0)"] }, o), ib.animate({ transform: [`translateX(${16 * dir}%) scale(1.1)`, "none"] }, o)];
     anims[2].onfinish = () => { a.classList.remove("on"); anims.forEach(x => x.cancel()); cur = i; busy = false; };
   }
   let wheelAt = 0, touchX = null;
