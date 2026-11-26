@@ -11,6 +11,7 @@
 
   // Contact sheet: strips of PER frames; unfilled slots stay as blank film.
   const sheet = $("sheet"), NAMES = window.SHEETS || [];
+  if (NAMES[0]) $("series").textContent = `Sheet 01 — ${NAMES[0]}`;   // the hero line always names the first sheet
   for (let s = 0; s < P.length; s += PER) {
     const slots = Array.from({ length: PER }, (_, k) => P[s + k] || null), range = `${pad(s + 1)} — ${pad(Math.min(s + PER, P.length))}`;
     const row = document.createElement("section"); row.className = "row";
