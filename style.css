@@ -99,7 +99,7 @@ main .label { color: #2c2c2c; }
 footer { display: flex; justify-content: space-between; gap: 20px; padding: 0 var(--pad) 40px; color: var(--dim); }
 footer a { transition: color .5s; } footer a:hover { color: var(--ink); }
 footer .mail { text-transform: none; letter-spacing: .08em; }
-footer > * { white-space: nowrap; }
+footer { align-items: flex-end; margin-top: -1.6em; } footer .sig { display: flex; flex-direction: column; } footer span, footer a { white-space: nowrap; }
 
 /* Viewer: the chosen frame grows out of the strip; photographs change behind a moving edge. */
 .viewer { position: fixed; inset: 0; z-index: 60; background: #050505; opacity: 0; transition: opacity .9s ease; }
@@ -137,7 +137,6 @@ footer > * { white-space: nowrap; }
   .strip::-webkit-scrollbar { display: none; }
   .film { width: calc(var(--n, 4) * 80vw); } .cell { scroll-snap-align: center; }
   .index li button { grid-template-columns: 2.6em 1fr; } .index li .w { display: none; }
-  footer { gap: 10px; font-size: 10px; letter-spacing: .08em; } footer .mail { letter-spacing: .03em; }
   .cap { bottom: 11vh; }
 }
 @media (prefers-reduced-motion: reduce) {
