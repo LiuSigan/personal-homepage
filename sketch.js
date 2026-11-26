@@ -139,7 +139,7 @@
     const cv = $("sketch"); if (!cv) return; const st = stage(cv, 195, 124), plate = $("plate"), Y0 = -.56, P0 = .24;
     const M = [{ m: fm2, name: "Nikon FM2", note: "35mm SLR — 1982", draw: 4800 }, { m: x100, name: "Fujifilm X100VI", note: "23mm fixed lens — 2024", draw: 4600 }, { m: roll, name: "35mm film", note: "36 exposures", draw: 2600, film: true }];
     const HOLD = 450, SPIN = 10500, ERASE = 1500, GAP = 550, lead = (s, v) => [FX + 19 + s, v, 11.2 + 11 * Math.sin(s / 48) * clamp(s / 50)];
-    const show = (o, p, yaw, pitch, L) => { st.begin(yaw, pitch); st.model(o.m, p); if (L) { const f = filmStrip(L, lead, true); if (f.outline) st.fill(f.outline, .1); f.forEach(Q => st.poly(Q, .8)); } };
+    const show = (o, p, yaw, pitch, L) => { st.begin(yaw, pitch); st.model(o.m, p); if (L) { const f = filmStrip(L, lead, true); if (f.outline) st.fill(f.outline, .045); f.forEach(Q => st.poly(Q, .8)); } };
     let mi = 0, clock = 0, t0 = 0, last = 0, started = false, seen = true, label = -1;
     const caption = i => { label = i; $("plateNum").textContent = `0${i + 1} / 0${M.length}`; $("plateName").textContent = M[i].name; $("plateNote").textContent = M[i].note; };
     function frame(now) {
@@ -171,17 +171,18 @@
         const A = [-55, 11.2], B = [RX, 31], LEN = Math.hypot(B[0] - A[0], B[1] - A[1]), at = (f, y) => [A[0] + (B[0] - A[0]) * f, y, A[1] + (B[1] - A[1]) * f];
         return { name: "Load the reel", draw: 2600, act: 6400, pitch: .6, yaw: -.3, lift: 0, frame(p, t) { const turns = 5 * inout(t), th = turns * TAU, travel = turns * 150, tw = t > 0 && t < 1 ? .26 * Math.sin(turns * TAU * 2.5) : 0, run = clamp(p * 1.6);
           // Film between the cassette and the reel: a translucent band whose perforations travel with it.
-          st.fill([at(0, 17.5), at(run, 17.5), at(run, -17.5), at(0, -17.5)], .13 * p); [17.5, -17.5].forEach(y => st.poly(path([at(0, y), at(1, y)]), .8 * p, .9, null, run));
+          st.fill([at(0, 17.5), at(run, 17.5), at(run, -17.5), at(0, -17.5)], .055 * p); [17.5, -17.5].forEach(y => st.poly(path([at(0, y), at(1, y)]), .8 * p, .9, null, run));
           if (p > .6) { for (let s = travel % 6; s < LEN - 3.2; s += 6) { const f0 = s / LEN, f1 = (s + 3.2) / LEN; [[16, 13.2], [-13.2, -16]].forEach(([u, v]) => st.poly([at(f0, u), at(f1, u), at(f1, v), at(f0, v), at(f0, u)], .5 * p, .7)); }
             for (let s = travel % 38; s < LEN; s += 38) st.poly([at(s / LEN, 11.5), at(s / LEN, -11.5)], .4 * p, .7); }
           // Film wound into the spiral: every turn is a thin wall, so the coil grows denser as it fills.
           const sp = []; for (let a = 0; a <= th; a += .1) { const r = 31 - 4.1 * a / TAU, b = Math.PI / 2 - a; sp.push([RX + r * Math.cos(b), r * Math.sin(b)]); }
-          for (let i = 1; i < sp.length; i++) st.fill([[sp[i - 1][0], 17.5, sp[i - 1][1]], [sp[i][0], 17.5, sp[i][1]], [sp[i][0], -17.5, sp[i][1]], [sp[i - 1][0], -17.5, sp[i - 1][1]]], .05 * p);
+          for (let i = 1; i < sp.length; i++) st.fill([[sp[i - 1][0], 17.5, sp[i - 1][1]], [sp[i][0], 17.5, sp[i][1]], [sp[i][0], -17.5, sp[i][1]], [sp[i - 1][0], -17.5, sp[i - 1][1]]], .02 * p);
           [17.5, -17.5].forEach(y => st.poly(sp.map(q => [q[0], y, q[1]]), .8 * p));
           if (sp.length > 1) { const e = sp[sp.length - 1]; st.poly([[e[0], 17.5, e[1]], [e[0], -17.5, e[1]]], .9 * p, 1.1); }
           st.model(cas, p); st.model(reel, p); st.model(top, p, rotY(tw, RX, 0)); st.model(bot, p, rotY(-tw, RX, 0)); } }; })(),
       (() => { const tank = model(g => { g.cyl([0, -34, 0], 62, 36, "y"); g.ring([0, -34, 0], 31, "y"); g.ring([0, 24, 0], 36, "y"); }), lid = model(g => { g.cyl([0, 28, 0], 8, 23, "y"); g.cyl([0, 36, 0], 6, 26, "y"); g.ring([0, 42, 0], 10, "y"); }),
-          reel = model(g => { g.ring([0, -28, 0], 31, "y"); g.ring([0, 8, 0], 31, "y"); g.cyl([0, -28, 0], 36, 7, "y"); [25, 19, 13].forEach(r => g.ring([0, -10, 0], r, "y")); });
+          reel = model(g => { g.ring([0, -28, 0], 31, "y"); g.ring([0, 8, 0], 31, "y"); g.cyl([0, -28, 0], 36, 7, "y"); }), coil = [];
+        for (let a = 0; a <= 5 * TAU; a += .12) { const r = 30 - 3.8 * a / TAU; coil.push([r * Math.cos(a), r * Math.sin(a)]); }
         const RAD = 35, Y0 = -34, Y1 = 28, PV = -4;
         // Water in the tilted tank is everything below a level surface; the level is solved so the amount stays the same.
         const water = (ang, V) => { const c = Math.cos(ang), s = Math.sin(ang), span = (x, Y) => { const w0 = PV + x * s + (Y0 - PV) * c, w1 = PV + x * s + (Y1 - PV) * c; if (w0 > Y && w1 > Y) return null; if (w0 <= Y && w1 <= Y) return [Y0, Y1, 0];
@@ -191,10 +192,13 @@
             for (let i = 0; i < 40; i++) { const a = i / 40 * TAU, x = RAD * Math.cos(a), z = RAD * Math.sin(a), q = span(x, Y); if (!q) continue; body.push([x, q[0], z], [x, q[1], z]); if (q[2]) surf.push([x, q[2] > 0 ? q[1] : q[0], z]); }
             return { body, surf }; };
         return { name: "Develop", draw: 2400, act: 11500, pitch: .3, yaw: -.4, lift: -12, zoom: .92, frame(p, t, clock) {
-          const k = clamp((t - .36) / .3), tip = inout(clamp((t - .7) / .08)) - inout(clamp((t - .93) / .07)), ang = (k > 0 && k < 1 ? 1.2 * Math.sin(k * TAU * 3) * Math.sin(k * Math.PI) : 0) - 2 * tip, R = rotZ(ang, 0, PV);
+          const k = clamp((t - .36) / .3), tip = inout(clamp((t - .7) / .08)) - inout(clamp((t - .93) / .07)), ang = (k > 0 && k < 1 ? .4 * Math.sin(k * TAU * 2.5) * Math.sin(k * Math.PI) : 0) - 2 * tip, R = rotZ(ang, 0, PV);
           const inn = inout(clamp((t - .19) / .15)), gone = inout(clamp((t - .75) / .16)), V = .7 * inn * (1 - gone);
           if (V > .004) { const w = water(ang, V); st.hull(w.body, .16 * p, R); if (w.surf.length > 2) { st.fill(w.surf, .1 * p, R); st.poly([...w.surf, w.surf[0]], .7 * p, .9, R); } }
-          st.model(tank, p, R); st.model(reel, p, chain(shift(0, 54 * (1 - inout(clamp(t / .11))), 0), R)); st.model(lid, Math.min(p, clamp((t - .11) / .08)), R);
+          const RR = chain(shift(0, 54 * (1 - inout(clamp(t / .11))), 0), R);
+          for (let i = 1; i < coil.length; i++) st.fill([[coil[i - 1][0], 7.5, coil[i - 1][1]], [coil[i][0], 7.5, coil[i][1]], [coil[i][0], -27.5, coil[i][1]], [coil[i - 1][0], -27.5, coil[i - 1][1]]], .02 * p, RR);
+          [7.5, -27.5].forEach(y => st.poly(coil.map(q => [q[0], y, q[1]]), .6 * p, .8, RR, clamp(p * 1.3)));
+          st.model(tank, p, R); st.model(reel, p, RR); st.model(lid, Math.min(p, clamp((t - .11) / .08)), R);
           if (inn > 0 && inn < 1) { const a = [], b = []; for (let y = 86; y >= 44; y -= 6) { const x = .8 * Math.sin(y / 7 + clock / 90); a.push([x - 1.5, y, 0]); b.push([x + 1.5, y, 0]); } st.fill([...a, ...b.slice().reverse()], .16); st.poly(a, .55); st.poly(b, .55); }
           if (gone > 0 && gone < 1) { const M = R([0, 43, 0]), N = R([0, 44, 0]), dx = N[0] - M[0], dy = N[1] - M[1], flow = Math.sqrt(Math.sin(Math.PI * gone)), a = [], b = [];
             for (let i = 0; i <= 16; i++) { const u = i / 16, x = M[0] + dx * 34 * u + .5 * Math.sin(u * 9 + clock / 80), y = M[1] + dy * 34 * u - 95 * u * u, w = 2.4 - 1.2 * u; a.push([x - w, y, 0]); b.push([x + w, y, 0]); }
@@ -203,7 +207,7 @@
         // A drop: round below, drawn up to a point of height r * k above its centre.
         const tear = (r, k, at) => { const Q = [at(0, r * k)]; for (let i = 0; i <= 12; i++) { const a = (35 - i / 12 * 250) * Math.PI / 180; Q.push(at(r * Math.cos(a), r * Math.sin(a))); } Q.push(Q[0]); return Q; };
         return { name: "Wash and dry", draw: 2600, act: 5600, pitch: .1, yaw: -.3, lift: 16, zoom: .9, frame(p, t, clock) { const L = 100 * inout(clamp(p * 1.15)), sway = .5 * Math.sin(clock / 1100), P = (s, v) => { const a = sway * s / 100; return [v * Math.cos(a), 48 - s, v * Math.sin(a)]; };
-          const f = filmStrip(L, P, false); if (f.outline) st.fill(f.outline, .1 * p); f.frames.forEach(Q => st.fill(Q, .07 * p)); f.forEach(Q => st.poly(Q, .8));
+          const f = filmStrip(L, P, false); if (f.outline) st.fill(f.outline, .045 * p); f.frames.forEach(Q => st.fill(Q, .035 * p)); f.forEach(Q => st.poly(Q, .8));
           st.model(rig, p); st.model(weight, clamp((p - .8) / .2), rotY(-sway));
           if (t > 0) { const wet = p * clamp(t * 6);
             // beads of water sliding down the wet film, each with a short trail
