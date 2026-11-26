@@ -34,6 +34,11 @@ img { filter: grayscale(1); }
 .sketch canvas { position: absolute; left: 0; top: 0; width: 100%; height: calc(100% - 30px); }
 .plate { position: absolute; right: 0; bottom: 0; display: flex; gap: 20px; color: var(--dim); opacity: 0; transition: opacity 1s ease; }
 .plate.on { opacity: 1; } #plateName, .plate .nm { color: var(--ink); }
+.steps { align-items: center; gap: 16px; bottom: -6px; }
+.steps button { padding: 8px 6px; transition: color .5s; } .steps button:hover, .steps button:focus-visible { color: var(--ink); outline: 0; }
+.steps #stepPrev, .steps #stepNext { font-size: 14px; letter-spacing: 0; }
+.steps #stepReplay { margin-right: 14px; padding: 4px 0; border-bottom: 1px solid currentColor; animation: arrive 1.2s ease both; } .steps [hidden] { display: none; }
+@keyframes arrive { from { opacity: 0; } }
 .rule { height: 1px; background: var(--line); margin-top: clamp(22px, 3.4vw, 52px); transform: scaleX(0); transform-origin: left; transition: transform 2.2s var(--inout) .5s; }
 .ready .rule { transform: none; }
 .meta { display: flex; justify-content: space-between; gap: 20px; padding-top: 16px; color: var(--dim); }
