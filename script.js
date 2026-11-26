@@ -10,12 +10,12 @@
   document.querySelectorAll(".hero .w").forEach(w => { w.innerHTML = [...w.textContent].map(c => `<span class="ch" style="--i:${n++}">${c}</span>`).join(""); });
 
   // Contact sheet: strips of PER frames; unfilled slots stay as blank film.
-  const sheet = $("sheet");
+  const sheet = $("sheet"), NAMES = window.SHEETS || [];
   for (let s = 0; s < P.length; s += PER) {
     const slots = Array.from({ length: PER }, (_, k) => P[s + k] || null), range = `${pad(s + 1)} — ${pad(Math.min(s + PER, P.length))}`;
     const row = document.createElement("section"); row.className = "row";
     const edge = pos => `<div class="edge ${pos}" aria-hidden="true">${slots.map((_, k) => pos === "top" ? `<span>LS 400 ▸ ${s + k + 1}</span><span>SAFETY FILM</span>` : `<span>▸ ${s + k + 1}A</span>`).join("")}</div>`;
-    row.innerHTML = `<p class="label"><span>Sheet ${pad(s / PER + 1)}</span><span class="where" data-range="${range}">${range}</span></p>
+    row.innerHTML = `<p class="label"><span>Sheet ${pad(s / PER + 1)}${NAMES[s / PER] ? " — " + NAMES[s / PER] : ""}</span><span class="where" data-range="${range}">${range}</span></p>
       <div class="glide"><div class="strip" style="--n:${PER}"><div class="film">${edge("top")}<div class="frames">${slots.map((p, k) => !p ? `<div class="cell"><div class="frame blank"></div></div>` :
         `<div class="cell"><button type="button" class="frame${p.h > p.w ? " portrait" : ""}" style="--k:${k}" data-i="${s + k}" aria-label="${p.title}"><img src="${src(p)}" alt="" ${s ? 'loading="lazy"' : ""}></button></div>`).join("")}</div>${edge("bottom")}</div></div></div>`;
     sheet.append(row);
