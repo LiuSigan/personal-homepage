@@ -153,16 +153,22 @@
   stage.addEventListener("click", e => { if (!matchMedia("(pointer: coarse)").matches) return; const x = e.clientX / innerWidth; if (x < .3) show(cur - 1); else if (x > .7) show(cur + 1); });
   document.addEventListener("click", e => { if (viewer.contains(e.target)) return; const f = e.target.closest("[data-g]"); if (f) return open(+f.dataset.g, f); const v = e.target.closest("[data-view]"); if (v) openSheet(+v.dataset.view, v); });
 
-  // ---- Contact: details and a short message form. With no server behind the site, sending hands the message to
-  // the visitor's own mail program, addressed and filled in.
-  const MAIL = "sliu050@e.ntu.edu.sg", form = $("ctForm"), note = $("ctNote"); let ctFrom = null;
+  // ---- Contact: details and a short message form. Messages go through Web3Forms, which forwards them by email;
+  // the key below is a public form id, meant to sit in the page. If that fails, the message is handed to the
+  // visitor's own mail program instead, addressed and filled in.
+  const MAIL = "sliu050@e.ntu.edu.sg", FORM_KEY = "30cb871a-e1f8-4f07-88c8-6d5a00762f6d", form = $("ctForm"), note = $("ctNote"); let ctFrom = null, sending = false;
   function openContact(from) { if (!ct.hidden) return; ctFrom = from || document.activeElement; ct.hidden = false; lock(); void ct.offsetWidth; ct.classList.add("show"); history.replaceState(null, "", "#contact"); $("ctClose").focus({ preventScroll: true }); }
   function closeContact() { if (ct.hidden) return; ct.classList.remove("show"); history.replaceState(null, "", location.pathname); setTimeout(() => { ct.hidden = true; lock(); if (ctFrom && ctFrom.focus) ctFrom.focus({ preventScroll: true }); }, reduce ? 0 : 600); }
   $("ctOpen").onclick = e => openContact(e.currentTarget); $("ctClose").onclick = closeContact;
   form.addEventListener("submit", e => { e.preventDefault(); const v = n => form.elements[n].value.trim(), bad = ["name", "email", "message"].find(n => !form.elements[n].checkValidity() || !v(n));
     if (bad) { note.textContent = bad === "email" ? "Please check your email address." : "Please fill in every field."; form.elements[bad].focus(); return; }
-    location.href = `mailto:${MAIL}?subject=${encodeURIComponent("Message from " + v("name") + " via siganliu.com")}&body=${encodeURIComponent(v("message") + "\n\n" + v("name") + "\n" + v("email"))}`;
-    note.textContent = "Your mail app should have opened with the message ready to send."; });
+    if (sending || form.elements.botcheck.checked) return; sending = true; const btn = form.querySelector("button"), subject = "Message from " + v("name") + " via siganliu.com"; btn.disabled = true; note.textContent = "Sending…";
+    fetch("https://api.web3forms.com/submit", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ access_key: FORM_KEY, subject, from_name: v("name") + " (siganliu.com)", name: v("name"), email: v("email"), message: v("message") }) })
+      .then(r => r.json().then(d => { if (!r.ok || !d.success) throw new Error(d.message || r.status); }))
+      .then(() => { note.textContent = "Sent. Thank you — I will write back."; form.reset(); })
+      .catch(() => { note.textContent = "That did not go through. Your mail app should open with the message instead."; location.href = `mailto:${MAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(v("message") + "\n\n" + v("name") + "\n" + v("email"))}`; })
+      .finally(() => { sending = false; btn.disabled = false; }); });
 
   // Addresses: #folder opens that series' sheet, #folder/3 its third photograph, #contact the contact page.
   if (location.hash === "#contact") openContact(document.body);

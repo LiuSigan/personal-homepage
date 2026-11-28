@@ -169,7 +169,7 @@ footer { align-items: flex-end; margin-top: -1.6em; } footer .sig { display: fle
 .ctform input, .ctform textarea { width: 100%; background: none; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 8px 0 12px; color: var(--ink); font: 300 21px/1.35 var(--serif); letter-spacing: .01em; font-variant-numeric: lining-nums; resize: vertical; transition: border-color .5s; }
 .ctform input:focus, .ctform textarea:focus { outline: 0; border-bottom-color: var(--ink); }
 .ctsend { display: flex; gap: 22px; align-items: baseline; flex-wrap: wrap; } .ctsend button { color: var(--ink); border-bottom: 1px solid currentColor; padding: 6px 0; } .ctsend button:hover { color: #fff; }
-#ctNote { text-transform: none; letter-spacing: .04em; }
+#ctNote { text-transform: none; letter-spacing: .04em; } .ctform .trap { display: none; } .ctsend button:disabled { opacity: .4; cursor: default; }
 
 /* Developing a print by hand. */
 .lab { position: fixed; inset: 0; z-index: 80; background: #040404; opacity: 0; transition: opacity .6s ease; cursor: grab; touch-action: none; }
