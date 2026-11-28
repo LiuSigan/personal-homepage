@@ -111,7 +111,7 @@ main .label button { transition: color .5s; } main .label button:hover, main .la
 .preview canvas { position: absolute; left: 0; top: 0; width: 100%; height: calc(100% - 30px); }
 footer { display: flex; justify-content: space-between; gap: 20px; padding: 0 var(--pad) 40px; color: var(--dim); }
 footer a { transition: color .5s; } footer a:hover { color: var(--ink); }
-footer .mail { text-transform: none; letter-spacing: .08em; }
+footer button { transition: color .5s; text-align: left; } footer button:hover, footer button:focus-visible { color: var(--ink); outline: 0; }
 footer { align-items: flex-end; margin-top: -1.6em; } footer .sig { display: flex; flex-direction: column; } footer span, footer a { white-space: nowrap; }
 
 /* Whole sheet: all the photographs of one series, four frames to a row, the rows touching like a printed contact sheet. */
@@ -152,6 +152,25 @@ footer { align-items: flex-end; margin-top: -1.6em; } footer .sig { display: fle
 .progress i { position: absolute; inset: 0; background: var(--dim); transform: scaleX(0); transform-origin: left; transition: transform 1.4s var(--inout); }
 .hint { display: flex; gap: 18px; } .hint button { font-size: 14px; letter-spacing: 0; padding: 4px; }
 
+/* Contact: details on the left, a short message form on the right. */
+.contact { position: fixed; inset: 0; z-index: 55; background: #070707; opacity: 0; transition: opacity .6s ease; }
+.contact[hidden] { display: none; } .contact.show { opacity: 1; }
+.contact .bar { position: absolute; background: linear-gradient(#070707 55%, transparent); z-index: 2; }
+.ctscroll { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; }
+.ctinner { max-width: 1180px; margin: 0 auto; min-height: 100%; padding: 16vh var(--pad) 10vh; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(40px, 8vw, 130px); align-content: center; }
+.ctinner > * { opacity: 0; transform: translateY(18px); transition: opacity 1.2s ease .15s, transform 1.4s var(--out) .15s; } .ctinner > :nth-child(2) { transition-delay: .3s; }
+.contact.show .ctinner > * { opacity: 1; transform: none; }
+.ctinfo h2 { font: italic 300 clamp(40px, 5.4vw, 84px)/1 var(--serif); letter-spacing: -.01em; text-transform: none; margin-bottom: clamp(30px, 4vw, 56px); }
+.ctinfo p { display: grid; gap: 6px; padding: 18px 0; border-top: 1px solid var(--line); color: var(--dim); } .ctinfo p:last-child { border-bottom: 1px solid var(--line); }
+.ctinfo a { justify-self: start; font: 300 clamp(21px, 2.1vw, 30px)/1.2 var(--serif); letter-spacing: .01em; font-variant-numeric: lining-nums; text-transform: none; color: var(--ink); background: linear-gradient(currentColor, currentColor) left bottom / 0 1px no-repeat; transition: background-size .8s var(--inout); }
+.ctinfo a:hover, .ctinfo a:focus-visible { background-size: 100% 1px; outline: 0; }
+.ctform { display: grid; gap: 26px; align-content: start; padding-top: 8px; color: var(--dim); }
+.ctform label { display: grid; gap: 8px; }
+.ctform input, .ctform textarea { width: 100%; background: none; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 8px 0 12px; color: var(--ink); font: 300 21px/1.35 var(--serif); letter-spacing: .01em; font-variant-numeric: lining-nums; resize: vertical; transition: border-color .5s; }
+.ctform input:focus, .ctform textarea:focus { outline: 0; border-bottom-color: var(--ink); }
+.ctsend { display: flex; gap: 22px; align-items: baseline; flex-wrap: wrap; } .ctsend button { color: var(--ink); border-bottom: 1px solid currentColor; padding: 6px 0; } .ctsend button:hover { color: #fff; }
+#ctNote { text-transform: none; letter-spacing: .04em; }
+
 /* Developing a print by hand. */
 .lab { position: fixed; inset: 0; z-index: 80; background: #040404; opacity: 0; transition: opacity .6s ease; cursor: grab; touch-action: none; }
 .lab[hidden] { display: none; } .lab.show { opacity: 1; }
@@ -185,7 +204,8 @@ footer { align-items: flex-end; margin-top: -1.6em; } footer .sig { display: fle
   .hint { gap: 6px; } .hint button { font-size: 20px; padding: 10px 12px; }
   .cap em { font-size: 21px; }
   .lab canvas { top: 70px; height: calc(100% - 190px); } .lab .bar.bot { flex-wrap: wrap; row-gap: 4px; padding-bottom: 22px; } #labHint { min-width: 0; flex: 1 0 100%; } .lab .progress { margin-left: 0; }
-  footer { padding-bottom: 30px; }
+  footer { padding-bottom: 30px; } footer button { padding: 8px 0; }
+  .ctinner { display: block; padding-top: 96px; } .ctform { margin-top: 44px; } .ctsend button { padding: 12px 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

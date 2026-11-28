@@ -41,7 +41,7 @@
   </div>
 </section>
 
-<footer><div class="sig"><span>© 2026 Liu Sigan</span><span>Contact: <a class="mail" href="mailto:sliu050@e.ntu.edu.sg">sliu050@e.ntu.edu.sg</a></span></div><a href="#top">Top ↑</a></footer>
+<footer><div class="sig"><span>© 2026 Liu Sigan</span><button type="button" id="ctOpen">Contact →</button></div><a href="#top">Top ↑</a></footer>
 
 <div class="sheetview" id="sheetview" role="dialog" aria-modal="true" aria-label="Contact sheet" hidden>
   <div class="bar top"><span id="svName"></span><span class="svmeta"><span id="svCount"></span><button type="button" id="svClose">Close</button></span></div>
@@ -52,6 +52,23 @@
   <div class="bar top"><span id="vName"></span><span class="vtools"><button type="button" id="develop">Develop</button><button type="button" id="close">Close</button></span></div>
   <div class="stage" id="stage"></div>
   <div class="bar bot"><span class="count"><span class="clip"><b id="num">01</b></span><span>/</span><span id="tot">01</span></span><div class="progress"><i id="prog"></i></div><span class="hint"><button type="button" id="prev" aria-label="Previous">←</button><button type="button" id="next" aria-label="Next">→</button></span></div>
+</div>
+
+<div class="contact" id="contact" role="dialog" aria-modal="true" aria-label="Contact" hidden>
+  <div class="bar top"><span>Contact</span><button type="button" id="ctClose">Close</button></div>
+  <div class="ctscroll"><div class="ctinner">
+    <div class="ctinfo">
+      <h2>Get in touch</h2>
+      <p><span>Email</span><a href="mailto:sliu050@e.ntu.edu.sg">sliu050@e.ntu.edu.sg</a></p>
+      <p><span>Phone</span><a href="tel:+6588733414">+65 8873 3414</a></p>
+    </div>
+    <form class="ctform" id="ctForm" novalidate>
+      <label><span>Your name</span><input type="text" name="name" autocomplete="name" required /></label>
+      <label><span>Your email</span><input type="email" name="email" autocomplete="email" required /></label>
+      <label><span>Message</span><textarea name="message" rows="4" required></textarea></label>
+      <p class="ctsend"><button type="submit">Send →</button><span id="ctNote" role="status"></span></p>
+    </form>
+  </div></div>
 </div>
 
 <div class="lab" id="lab" role="dialog" aria-modal="true" aria-label="Develop a print" hidden>

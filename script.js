@@ -74,7 +74,7 @@
 
   // ---- Whole sheet: every photograph of one series, four frames to a row
   const viewer = $("viewer"), sv = $("sheetview"), svInner = $("svInner"); let svOpen = -1, svFrom = null;
-  const lock = () => document.body.classList.toggle("locked", !viewer.hidden || !sv.hidden);
+  const ct = $("contact"), lock = () => document.body.classList.toggle("locked", !viewer.hidden || !sv.hidden || !ct.hidden);
   function openSheet(s, from) {
     if (svOpen >= 0 || !viewer.hidden || !S[s]) return; const all = of(s), per = innerWidth <= 760 ? 2 : 4, rows = [];
     for (let k = 0; k < all.length; k += per) { const r = all.slice(k, k + per); while (r.length < per) r.push(null); rows.push(`<div class="svrow" style="--r:${rows.length}">${film(r, k, rows.length < 2)}</div>`); }
@@ -144,7 +144,7 @@
   stage.addEventListener("touchstart", e => { touchX = e.touches[0].clientX; }, { passive: true });
   stage.addEventListener("touchend", e => { if (touchX === null) return; const dx = e.changedTouches[0].clientX - touchX; touchX = null; if (Math.abs(dx) > 40) show(cur + (dx < 0 ? 1 : -1)); }, { passive: true });
   const labOn = () => window.LAB && window.LAB.isOpen();
-  addEventListener("keydown", e => { if (labOn()) return; if (viewer.hidden) { if (e.key === "Escape") closeSheet(); return; }
+  addEventListener("keydown", e => { if (labOn()) return; if (!ct.hidden) { if (e.key === "Escape") closeContact(); return; } if (viewer.hidden) { if (e.key === "Escape") closeSheet(); return; }
     if (e.key === "Escape") close(); else if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); show(cur + 1); } else if (e.key === "ArrowLeft") { e.preventDefault(); show(cur - 1); } });
   addEventListener("resize", () => { if (!viewer.hidden) layout(); });
   $("close").onclick = close; $("prev").onclick = () => show(cur - 1); $("next").onclick = () => show(cur + 1);
@@ -153,7 +153,19 @@
   stage.addEventListener("click", e => { if (!matchMedia("(pointer: coarse)").matches) return; const x = e.clientX / innerWidth; if (x < .3) show(cur - 1); else if (x > .7) show(cur + 1); });
   document.addEventListener("click", e => { if (viewer.contains(e.target)) return; const f = e.target.closest("[data-g]"); if (f) return open(+f.dataset.g, f); const v = e.target.closest("[data-view]"); if (v) openSheet(+v.dataset.view, v); });
 
-  // Addresses: #folder opens that series' sheet, #folder/3 its third photograph.
+  // ---- Contact: details and a short message form. With no server behind the site, sending hands the message to
+  // the visitor's own mail program, addressed and filled in.
+  const MAIL = "sliu050@e.ntu.edu.sg", form = $("ctForm"), note = $("ctNote"); let ctFrom = null;
+  function openContact(from) { if (!ct.hidden) return; ctFrom = from || document.activeElement; ct.hidden = false; lock(); void ct.offsetWidth; ct.classList.add("show"); history.replaceState(null, "", "#contact"); $("ctClose").focus({ preventScroll: true }); }
+  function closeContact() { if (ct.hidden) return; ct.classList.remove("show"); history.replaceState(null, "", location.pathname); setTimeout(() => { ct.hidden = true; lock(); if (ctFrom && ctFrom.focus) ctFrom.focus({ preventScroll: true }); }, reduce ? 0 : 600); }
+  $("ctOpen").onclick = e => openContact(e.currentTarget); $("ctClose").onclick = closeContact;
+  form.addEventListener("submit", e => { e.preventDefault(); const v = n => form.elements[n].value.trim(), bad = ["name", "email", "message"].find(n => !form.elements[n].checkValidity() || !v(n));
+    if (bad) { note.textContent = bad === "email" ? "Please check your email address." : "Please fill in every field."; form.elements[bad].focus(); return; }
+    location.href = `mailto:${MAIL}?subject=${encodeURIComponent("Message from " + v("name") + " via siganliu.com")}&body=${encodeURIComponent(v("message") + "\n\n" + v("name") + "\n" + v("email"))}`;
+    note.textContent = "Your mail app should have opened with the message ready to send."; });
+
+  // Addresses: #folder opens that series' sheet, #folder/3 its third photograph, #contact the contact page.
+  if (location.hash === "#contact") openContact(document.body);
   const [folder, k] = decodeURIComponent(location.hash.slice(1)).split("/"), s = S.findIndex(se => se.folder === folder);
   if (s >= 0) { if (k && S[s].photos[k - 1]) open(S[s].first + (k - 1), document.body); else openSheet(s, document.body); }
 })();
