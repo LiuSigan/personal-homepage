@@ -37,6 +37,7 @@
   <div class="preview">
     <canvas id="process" aria-hidden="true"></canvas>
     <p class="plate steps" id="plate2"><button type="button" id="stepPrev" aria-label="Previous step" hidden>←</button><span id="stepNum"></span><span class="nm" id="stepName"></span><button type="button" id="stepNext" aria-label="Next step" hidden>→</button></p>
+    <button type="button" class="labopen" id="labOpen">Develop a print yourself →</button>
   </div>
 </section>
 
@@ -48,9 +49,15 @@
 </div>
 
 <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="Photograph" hidden>
-  <div class="bar top"><span id="vName"></span><button type="button" id="close">Close</button></div>
+  <div class="bar top"><span id="vName"></span><span class="vtools"><button type="button" id="develop">Develop</button><button type="button" id="close">Close</button></span></div>
   <div class="stage" id="stage"></div>
   <div class="bar bot"><span class="count"><span class="clip"><b id="num">01</b></span><span>/</span><span id="tot">01</span></span><div class="progress"><i id="prog"></i></div><span class="hint"><button type="button" id="prev" aria-label="Previous">←</button><button type="button" id="next" aria-label="Next">→</button></span></div>
+</div>
+
+<div class="lab" id="lab" role="dialog" aria-modal="true" aria-label="Develop a print" hidden>
+  <div class="bar top"><span id="labName"></span><button type="button" id="labClose">Close</button></div>
+  <canvas id="labCanvas"></canvas>
+  <div class="bar bot"><span id="labHint"></span><div class="progress"><i id="labProg"></i></div><span id="labClock"></span><button type="button" id="labBack">Back →</button></div>
 </div>
 
 <script src="./photos.js"></script>

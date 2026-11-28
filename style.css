@@ -152,16 +152,40 @@ footer { align-items: flex-end; margin-top: -1.6em; } footer .sig { display: fle
 .progress i { position: absolute; inset: 0; background: var(--dim); transform: scaleX(0); transform-origin: left; transition: transform 1.4s var(--inout); }
 .hint { display: flex; gap: 18px; } .hint button { font-size: 14px; letter-spacing: 0; padding: 4px; }
 
+/* Developing a print by hand. */
+.lab { position: fixed; inset: 0; z-index: 80; background: #040404; opacity: 0; transition: opacity .6s ease; cursor: grab; touch-action: none; }
+.lab[hidden] { display: none; } .lab.show { opacity: 1; }
+.lab .bar { position: absolute; } .lab #labName { color: var(--ink); }
+.lab canvas { position: absolute; left: 0; top: 64px; width: 100%; height: calc(100% - 150px); }
+.lab .bar.bot { white-space: nowrap; } .lab .progress i { background: var(--ink); transition: none; } #labClock { font-variant-numeric: tabular-nums; } #labHint { color: var(--ink); min-width: 15em; }
+#labBack { display: none; color: var(--ink); border-bottom: 1px solid currentColor; } .lab.done #labBack { display: inline; animation: arrive 1s ease both; }
+.vtools { display: inline-flex; gap: clamp(16px, 2.6vw, 36px); }
+.labopen { position: absolute; left: 0; bottom: -6px; padding: 8px 0; color: var(--dim); transition: color .5s; } .labopen:hover, .labopen:focus-visible { color: var(--ink); outline: 0; }
+
 @media (max-width: 900px) { .index { display: block; } .preview { position: relative; top: auto; margin-top: 44px; } }
 @media (max-width: 760px) {
-  .hero { padding: 31vh var(--pad) 9vh; }
-  .sketch { top: 9vh; bottom: auto; height: 21vh; width: auto; left: var(--pad); } #plateNote { display: none; }
-  .meta .scroll { display: none; }
-  .strip { --fw: 80vw; }
-  main { --lab: 58px; } main .label { flex-direction: column; gap: 4px; } .label .where { display: none; }
-  .ser .head, .ser li button { grid-template-columns: 2.6em 1fr; } .ser .w { display: none; } .ser .view { margin-left: 2.6em; }
+  :root { --dim: #9b9b9b; --pad: 20px; }
+  body { font-size: 11.5px; letter-spacing: .13em; }
+  /* First screen: the drawing fills the upper half, the name sits at the foot like a title page. */
+  .hero { min-height: 100svh; padding: 0 var(--pad) 26px; display: flex; flex-direction: column; justify-content: flex-end; }
+  .sketch { top: 58px; bottom: auto; left: 0; right: 0; width: auto; height: 50svh; }
+  .plate { right: var(--pad); } #plateNote { display: none; }
+  .hero h1 { font-size: 19.5vw; }
+  .rule { margin-top: 20px; } .meta .scroll { display: none; }
+  .bar { padding: 14px var(--pad); } .bar a, .bar button { padding: 10px 0; } .bar nav { gap: 26px; }
+  .strip { --fw: 82vw; scroll-snap-type: x proximity; } .cell { scroll-snap-align: center; }
+  main { --lab: 74px; --band: 22px; margin-bottom: 84px; } main .label { flex-direction: column; gap: 6px; } .label .where { display: none; }
+  .label .tools { gap: 22px; align-items: center; } .label .switch button { font-size: 17px; padding: 4px 8px; } #sView { padding: 4px 0; }
+  .index { padding-bottom: 70px; } .ser .head { padding: 19px 0; } .ser li button { padding: 12px 0; }
+  .ser .head, .ser li button { grid-template-columns: 2.6em 1fr; } .ser .w { display: none; } .ser .view { margin-left: 2.6em; padding: 10px 0 10px 12px; }
+  .preview { margin-top: 30px; aspect-ratio: 5 / 4; } .steps button { padding: 12px 10px; } .steps #stepPrev, .steps #stepNext { font-size: 18px; } .labopen { padding: 12px 0; bottom: -52px; } .preview { margin-bottom: 64px; }
   .svinner { padding-left: 0; padding-right: 0; } #svCount { display: none; } .sheetview .bar { white-space: nowrap; } #svName { overflow: hidden; text-overflow: ellipsis; }
-  .cap { bottom: 11vh; }
+  /* Viewer: big targets at the foot, caption directly under the print. */
+  .viewer .bar.top { white-space: nowrap; } #vName { overflow: hidden; text-overflow: ellipsis; max-width: 52vw; }
+  .hint { gap: 6px; } .hint button { font-size: 20px; padding: 10px 12px; }
+  .cap em { font-size: 21px; }
+  .lab canvas { top: 70px; height: calc(100% - 190px); } .lab .bar.bot { flex-wrap: wrap; row-gap: 4px; padding-bottom: 22px; } #labHint { min-width: 0; flex: 1 0 100%; } .lab .progress { margin-left: 0; }
+  footer { padding-bottom: 30px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

@@ -95,10 +95,11 @@
   const frameOf = g => (svOpen >= 0 ? svInner : strip).querySelector(`.frame[data-g="${g}"]`), unhide = () => document.querySelectorAll(".frame.away").forEach(x => x.classList.remove("away"));
   const address = g => "#" + S[P[g].s].folder + "/" + (P[g].k + 1);
   const load = i => [i - 1, i, i + 1].forEach(k => { const im = slides[k] && slides[k].querySelector("img[data-src]"); if (im) { im.src = im.dataset.src; delete im.dataset.src; } });
-  const layout = () => { const W = innerWidth, H = innerHeight, small = W <= 760, px = small ? 16 : Math.max(18, Math.min(150, W * .09)), top = H * .09, bw = W - px * 2, bh = H * (small ? .69 : .72);
+  const layout = () => { const W = innerWidth, H = innerHeight, small = W <= 760, px = small ? 16 : Math.max(18, Math.min(150, W * .09)), top = H * .09, bw = W - px * 2, bh = H * (small ? .66 : .72);
     const m = Math.round(Math.max(12, Math.min(26, Math.min(W, H) * .024)));   // paper margin around each print
     P.forEach((p, i) => { const s = Math.min((bw - 2 * m) / p.w, (bh - 2 * m) / p.h), w = p.w * s, h = p.h * s, r = rects[i] = { left: px + (bw - w) / 2, top: top + (bh - h) / 2, width: w, height: h }, st = slides[i].querySelector(".print").style;
-      Object.assign(st, { left: r.left - m + "px", top: r.top - m + "px", width: r.width + 2 * m + "px", height: r.height + 2 * m + "px" }); st.setProperty("--m", m + "px"); }); };
+      Object.assign(st, { left: r.left - m + "px", top: r.top - m + "px", width: r.width + 2 * m + "px", height: r.height + 2 * m + "px" }); st.setProperty("--m", m + "px");
+      const cap = slides[i].querySelector(".cap").style; cap.top = small ? r.top + r.height + m + 20 + "px" : ""; cap.bottom = small ? "auto" : ""; }); };   // on a phone the caption sits right under the print
   const px = r => ({ left: r.left + "px", top: r.top + "px", width: r.width + "px", height: r.height + "px" });
   const visible = el => { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth; };
   // The counter and bar run within the photograph's own series; the line at top left names that series.
@@ -110,7 +111,7 @@
 
   function open(i, from) {
     if (busy || !viewer.hidden || !P[i]) return; opener = from || document.activeElement; cur = i; load(i); layout();
-    slides.forEach((s, k) => { s.classList.toggle("on", k === i); s.classList.remove("capin"); }); meter(i);
+    slides.forEach((s, k) => { s.classList.toggle("on", k === i); s.classList.remove("capin"); }); meter(i); window.SHEET_LAST = i;
     viewer.hidden = false; lock(); history.replaceState(null, "", address(i));
     const f = frameOf(i), settle = () => { viewer.classList.remove("flipping"); viewer.classList.add("live"); slides[cur].classList.add("capin"); busy = false; $("close").focus({ preventScroll: true }); };
     if (!flips(f)) { void viewer.offsetWidth; viewer.classList.add("show"); settle(); return; }
@@ -128,7 +129,7 @@
     c.animate([px(rects[cur]), px(f.getBoundingClientRect())], { duration: 1150, easing: INOUT, fill: "forwards" }).onfinish = () => { done(); requestAnimationFrame(() => c.remove()); };
   }
   function show(i) {
-    if (busy || i === cur || i < 0 || i >= P.length) return; const dir = i > cur ? 1 : -1, a = slides[cur], b = slides[i]; load(i); meter(i, true);
+    if (busy || i === cur || i < 0 || i >= P.length) return; const dir = i > cur ? 1 : -1, a = slides[cur], b = slides[i]; load(i); meter(i, true); window.SHEET_LAST = i;
     history.replaceState(null, "", address(i));
     if (reduce) { a.classList.remove("on", "capin"); b.classList.add("on", "capin"); cur = i; return; }
     busy = true; const fa = a.querySelector(".print"), fb = b.querySelector(".print"), ia = a.querySelector("img"), ib = b.querySelector("img"), o = { duration: 1400, easing: INOUT, fill: "both" };
@@ -139,13 +140,17 @@
     anims[2].onfinish = () => { a.classList.remove("on"); anims.forEach(x => x.cancel()); cur = i; busy = false; };
   }
   let wheelAt = 0, touchX = null;
-  viewer.addEventListener("wheel", e => { e.preventDefault(); const d = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX, now = Date.now(); if (Math.abs(d) < 8 || now - wheelAt < 900) return; wheelAt = now; show(cur + Math.sign(d)); }, { passive: false });
+  viewer.addEventListener("wheel", e => { e.preventDefault(); if (labOn()) return; const d = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX, now = Date.now(); if (Math.abs(d) < 8 || now - wheelAt < 900) return; wheelAt = now; show(cur + Math.sign(d)); }, { passive: false });
   stage.addEventListener("touchstart", e => { touchX = e.touches[0].clientX; }, { passive: true });
   stage.addEventListener("touchend", e => { if (touchX === null) return; const dx = e.changedTouches[0].clientX - touchX; touchX = null; if (Math.abs(dx) > 40) show(cur + (dx < 0 ? 1 : -1)); }, { passive: true });
-  addEventListener("keydown", e => { if (viewer.hidden) { if (e.key === "Escape") closeSheet(); return; }
+  const labOn = () => window.LAB && window.LAB.isOpen();
+  addEventListener("keydown", e => { if (labOn()) return; if (viewer.hidden) { if (e.key === "Escape") closeSheet(); return; }
     if (e.key === "Escape") close(); else if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); show(cur + 1); } else if (e.key === "ArrowLeft") { e.preventDefault(); show(cur - 1); } });
   addEventListener("resize", () => { if (!viewer.hidden) layout(); });
   $("close").onclick = close; $("prev").onclick = () => show(cur - 1); $("next").onclick = () => show(cur + 1);
+  $("develop").onclick = () => window.LAB && window.LAB.open(cur);
+  // On a phone, tapping the left or right third of the screen turns the page.
+  stage.addEventListener("click", e => { if (!matchMedia("(pointer: coarse)").matches) return; const x = e.clientX / innerWidth; if (x < .3) show(cur - 1); else if (x > .7) show(cur + 1); });
   document.addEventListener("click", e => { if (viewer.contains(e.target)) return; const f = e.target.closest("[data-g]"); if (f) return open(+f.dataset.g, f); const v = e.target.closest("[data-view]"); if (v) openSheet(+v.dataset.view, v); });
 
   // Addresses: #folder opens that series' sheet, #folder/3 its third photograph.
