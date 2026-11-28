@@ -164,7 +164,6 @@
     g.ring([-33.5, 15, F], 2.8, "z"); g.line([-31.6, 13, F], [-28.4, 9.6, F]);                                                 // depth-of-field preview
     g.ring([34, -6, F], 4, "z"); g.ring([34, -6, F], 2.4, "z");                                                                 // lens release
     g.ring([34.5, 13, F], 2.8, "z"); g.ring([34.5, 13, F], 1.2, "z");                                                           // sync terminal
-    g.text("FM2", [-66, 11.4, F], RT, U, 5);
     g.on(FR, LF); g.line([-70.5, 17, 9], [-76.5, 13.5, 9], [-70.5, 10, 9]); g.on(FR, RT); g.line([70.5, 17, 9], [76.5, 13.5, 9], [70.5, 10, 9]);   // strap lugs
     // back
     g.on(BK); g.rect(-60, -36, 60, 7, K); g.line([-56.5, -36, K], [-56.5, 7, K]); g.rect(-17, -27, 17, -5, K); g.rect(-14, -24, 14, -8, K);
@@ -188,7 +187,6 @@
     g.flat(-3, 5, 17, -12, T + .5); g.line([0, T + .5, 5], [0, T + .5, -9], [14, T + .5, -9], [14, T + .5, 5]); g.line([3.5, T + .5, -3], [10.5, T + .5, -3]);   // hot shoe
     // front
     g.on(FR); g.rect(33, 18.5, 59, 31, F); g.rect(35.5, 21, 56.5, 28.5, F); g.rect(9, 22, 23, 28, F); g.ring([28.5, 12.5, F], 2, "z");   // finder window, flash, AF lamp
-    g.text("FUJIFILM", [-38, 22.3, F], RT, U, 4);
     g.ring([-22, 8.5, F], 4.6, "z"); g.ring([-22, 8.5, F], 1.8, "z"); g.line([-24.6, 4.8, F], [-30.4, -3.6, F], [-28, -5.2, F], [-21.4, 4, F]);   // viewfinder selector
     g.on(FR, LF); g.rect(-62, -32, -49.5, 12, 19.6); g.line([-62, 12, 16.6], [-62, 12, 19.6]); g.line([-49.5, 12, 16.6], [-49.5, 12, 19.6]); g.line([-49.5, -32, 16.6], [-49.5, -32, 19.6]);   // grip
     g.on(FR, U); g.tube([-56, 21.5, 16.5], 9, 3.4, "x", 12);                                                         // front command dial
